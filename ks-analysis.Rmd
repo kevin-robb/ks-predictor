@@ -1,0 +1,71 @@
+---
+title: "SL Project Analysis"
+author: "Kevin Robb"
+date: "11/18/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Read in Data
+
+Variables are 
+ID,name,category,main_category,currency,deadline,goal,launched,pledged,state,backers,country,usd pledged,usd_pledged_real,usd_goal_real
+
+```{r}
+df_orig = read.csv("data/ks-projects-201801.csv")
+#head(df_orig)
+names(df_orig)
+```
+
+# Subset for now for the sake of testing faster
+
+```{r}
+df = df_orig[c(1:100),]
+head(df)
+```
+
+
+# Pre-Process the Data
+
+## Remove all rows without explicit success or failure
+
+```{r}
+df_bin <- df[(grepl("successful",df$state) | grepl("failed",df$state)),]
+head(df_bin)
+length(df_bin$state)
+```
+
+## Remove columns that the agent should not have access to
+
+Allowed variables:
+ - ID, name, category, main_category, currency, deadline, goal, launched [1:8]
+ - country [12]
+ - usd_goal_real [15]
+
+Disallowed variables:
+ - pledged [9]
+ - backers [11]
+ - usd.pledged [13]
+ - usd_pledged_real [14]
+
+Labels:
+ - state [10]
+
+
+```{r}
+df_trim <- df_bin[,-c(9,11,13,14)]
+head(df_trim)
+```
+
+## Turn all variables into something the code can interpret
+
+This is the more complicated part. We need to turn many of these non-numeric variables into an interpretable characteristic, like a number or boolean.
+
+This could be like length_of_title instead of the string, and changing the dates to one long number instead of the formatted date.
+
+
+
+
