@@ -15,7 +15,8 @@ Variables are
 ID,name,category,main_category,currency,deadline,goal,launched,pledged,state,backers,country,usd pledged,usd_pledged_real,usd_goal_real
 
 ```{r}
-df_orig = read.csv("data/ks-projects-201801.csv")
+#df_orig = read.csv("data/ks-projects-201801.csv")
+df_orig = read.csv("data/ks_orig.csv")
 #head(df_orig)
 names(df_orig)
 ```
@@ -41,22 +42,26 @@ length(df_bin$state)
 ## Remove columns that the agent should not have access to
 
 Allowed variables:
- - ID, name, category, main_category, currency, deadline, goal, launched [1:8]
+
+ - name, category, main_category, currency, deadline, goal, launched [2:8]
  - country [12]
  - usd_goal_real [15]
 
 Disallowed variables:
+
+ - ID [1] (just because it is irrelevant/random and shouldn't be used)
  - pledged [9]
  - backers [11]
  - usd.pledged [13]
  - usd_pledged_real [14]
 
 Labels:
+
  - state [10]
 
 
 ```{r}
-df_trim <- df_bin[,-c(9,11,13,14)]
+df_trim <- df_bin[,-c(1,9,11,13,14)]
 head(df_trim)
 ```
 
@@ -65,6 +70,9 @@ head(df_trim)
 This is the more complicated part. We need to turn many of these non-numeric variables into an interpretable characteristic, like a number or boolean.
 
 This could be like length_of_title instead of the string, and changing the dates to one long number instead of the formatted date.
+Maybe use category popularity rank rather than category. 
+
+Also need to change target/labels to failed=0 and successful=1, and move them to the very last column.
 
 
 
