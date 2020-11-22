@@ -69,10 +69,112 @@ head(df_trim)
 
 This is the more complicated part. We need to turn many of these non-numeric variables into an interpretable characteristic, like a number or boolean.
 
-This could be like length_of_title instead of the string, and changing the dates to one long number instead of the formatted date.
-Maybe use category popularity rank rather than category. 
+Also need to change target/labels to failed=0 and successful=1 (maybe?), and move them to the very last column.
 
-Also need to change target/labels to failed=0 and successful=1, and move them to the very last column.
+### Replace the title with some numeric characteristics 
+
+Remove "name". Add "title_length" (integer length), "title_punc" (# punctuation marks), and "title_caps_ratio" (ratio of letters that are uppercase)
+
+```{r}
+# create list "title_length" to store length
+title_length <- numeric(length(df_trim$name))
+# create list "title_punc" to store the number of punctuation marks in the title
+title_punc <- numeric(length(df_trim$name))
+# define characters that count as punctuation
+punc <- c('.', ',', '!', '?', '&', '$', '#', '@', '*', '^', '<', '>', '/', '\"', '\'', '(', ')', '-', '_', '=', '+', '{', '}', '[', ']', '|', '\\', ';', ':', '%')
+# create list "title_caps_ratio" to store ratio of UPPERCASE to total length
+title_caps_ratio <- numeric(length(df_trim$name))
+# define characters that count as uppercase (had problem with toupper(" "))
+caps = c('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z')
+
+# iterate through the name strings to create title_length
+for (row in 1:nrow(df_trim)) {
+  # grab the title length
+  title_length[row] <- nchar(df_trim[row,"name"])
+  # iterate through characters and count punctuation & caps
+  num_punc <- 0
+  num_caps <- 0
+  title_arr <- strsplit(df_trim[row,"name"], "")[[1]]
+  for (c in title_arr) {
+    if (c %in% punc) {
+      num_punc <- num_punc + 1
+    }
+    if (c %in% caps) {
+      num_caps <- num_caps + 1
+    }
+  }
+  title_punc[row] <- num_punc
+  title_caps_ratio[row] <- num_caps / (title_length[row] - num_punc)
+}
+
+# add the new columns to the dataframe
+df_trim = cbind(df_trim, title_length)
+df_trim = cbind(df_trim, title_punc)
+df_trim = cbind(df_trim, title_caps_ratio)
+# remove the title column
+df_trim = subset(df_trim, select = -c(name) )
+head(df_trim)
+```
+
+### Change currency and country to binary (US or not)
+
+Replace "currency" with "currency_is_usd" (1=USD, 0=not USD).
+Replace "country" with "country_is_us" (1=US, 0=not US).
+
+```{r}
+# create lists to store results
+currency_is_usd <- numeric(length(df_trim$currency))
+country_is_us <- numeric(length(df_trim$country))
+
+# iterate through the name strings to create title_length
+for (row in 1:nrow(df_trim)) {
+  if (df_trim[row,"currency"] == "USD") {
+    currency_is_usd[row] <- 1
+  } else {
+    currency_is_usd[row] <- 0
+  }
+  if (df_trim[row,"country"] == "US") {
+    country_is_us[row] <- 1
+  } else {
+    country_is_us[row] <- 0
+  }
+}
+
+# add the new columns to the dataframe
+df_trim = cbind(df_trim, currency_is_usd)
+df_trim = cbind(df_trim, country_is_us)
+# remove the currency column
+df_trim = subset(df_trim, select = -c(currency, country) )
+head(df_trim)
+```
+
+### Make dates purely numeric
+
+Convert to epoch times so the DT doesn't need to worry about formatting and can use strict comparisions. "launched" -> "launched_epoch". "deadline" removed and used it to get "open_epoch", which is the total size of the window (deadline - launched) that the project was open for.
+
+```{r}
+# create lists to store results
+launched_epoch <- as.integer(as.POSIXct(df_trim$launched))
+open_epoch <- as.integer(as.POSIXct(df_trim$deadline)) - launched_epoch
+
+# add the new columns to the dataframe
+df_trim = cbind(df_trim, launched_epoch)
+df_trim = cbind(df_trim, deadline_epoch)
+# remove the currency column
+df_trim = subset(df_trim, select = -c(launched, deadline) )
+head(df_trim)
+```
+
+
+
+### Work on the categories
+
+Maybe use category popularity rank rather than category? Don't want to bias with rankings since the DT will use thresholds
+
+Honestly might just need to let it keep the categories, since they feel really important and there isn't a good proxy. Could maybe strip out all examples in like half the categories to shrink the state space?
+
+
+
 
 
 
