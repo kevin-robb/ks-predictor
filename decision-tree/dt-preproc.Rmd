@@ -1,0 +1,227 @@
+---
+title: "SL Project: Pre-Processing for Decision Trees"
+author: "Kevin Robb"
+date: "11/25/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Read in Data
+
+Variables are 
+ID,name,category,main_category,currency,deadline,goal,launched,pledged,state,backers,country,usd pledged,usd_pledged_real,usd_goal_real
+
+```{r}
+#df_orig = read.csv("data/ks-projects-201801.csv")
+df_orig = read.csv("data/ks_orig.csv")
+#head(df_orig)
+names(df_orig)
+```
+
+# Optionally subset for the sake of testing large datasets faster
+
+```{r}
+df = df_orig[c(1:100),]
+#df = df_orig # use this line to run on the full dataset
+head(df)
+```
+
+
+# Pre-Process the Data
+
+## Remove all rows without explicit success or failure
+
+```{r}
+df <- df[(grepl("successful",df$state) | grepl("failed",df$state)),]
+head(df)
+length(df$state)
+```
+
+## Remove columns that the agent should not have access to
+
+Allowed variables:
+
+ - name, category, main_category, currency, deadline, goal, launched [2:8]
+ - country [12]
+ - usd_goal_real [15]
+
+Disallowed variables:
+
+ - ID [1] (just because it is irrelevant/random and shouldn't be used)
+ - pledged [9]
+ - backers [11]
+ - usd.pledged [13]
+ - usd_pledged_real [14]
+
+Labels:
+
+ - state [10]
+
+
+```{r}
+df <- df[,-c(1,9,11,13,14)]
+head(df)
+```
+
+## Turn all variables into something the code can interpret
+
+This is the more complicated part. We need to turn many of these non-numeric variables into an interpretable characteristic, like a number (int or float) or boolean (0 or 1).
+
+### Replace the title with some numeric characteristics 
+
+Remove "name". Add "title_length" (integer length), "title_punc" (# punctuation marks), and "title_caps_ratio" (ratio of letters that are uppercase)
+
+```{r}
+# create list "title_length" to store length
+title_length <- numeric(length(df$name))
+# create list "title_punc" to store the number of punctuation marks in the title
+title_punc <- numeric(length(df$name))
+# define characters that count as punctuation
+punc <- c('.', ',', '!', '?', '&', '$', '#', '@', '*', '^', '<', '>', '/', '\"', '\'', '(', ')', '-', '_', '=', '+', '{', '}', '[', ']', '|', '\\', ';', ':', '%')
+# create list "title_caps_ratio" to store ratio of UPPERCASE to total length
+title_caps_ratio <- numeric(length(df$name))
+# define characters that count as uppercase (had problem with toupper(" "))
+caps = c('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z')
+
+# iterate through the name strings to create title_length
+for (row in 1:nrow(df)) {
+  # grab the title length
+  title_length[row] <- nchar(df[row,"name"])
+  # iterate through characters and count punctuation & caps
+  num_punc <- 0
+  num_caps <- 0
+  title_arr <- strsplit(df[row,"name"], "")[[1]]
+  for (c in title_arr) {
+    if (c %in% punc) {
+      num_punc <- num_punc + 1
+    }
+    if (c %in% caps) {
+      num_caps <- num_caps + 1
+    }
+  }
+  title_punc[row] <- num_punc
+  title_caps_ratio[row] <- num_caps / (title_length[row] - num_punc)
+}
+
+# add the new columns to the dataframe
+df = cbind(df, title_length)
+df = cbind(df, title_punc)
+df = cbind(df, title_caps_ratio)
+# remove the title column
+df = subset(df, select = -c(name) )
+head(df)
+```
+
+### Change currency and country to binary (US or not)
+
+Replace "currency" with "currency_is_usd" (1=USD, 0=not USD).
+Replace "country" with "country_is_us" (1=US, 0=not US).
+
+```{r}
+# create lists to store results
+currency_is_usd <- numeric(length(df$currency))
+country_is_us <- numeric(length(df$country))
+# assign the lists' values (they init to 0, so don't need to set negative case)
+currency_is_usd[grepl("USD",df$currency)] <- 1
+country_is_us[grepl("US",df$country)] <- 1
+
+# add the new columns to the dataframe
+df = cbind(df, currency_is_usd)
+df = cbind(df, country_is_us)
+# remove the currency column
+df = subset(df, select = -c(currency, country) )
+head(df)
+```
+
+### Make dates purely numeric
+
+Convert to epoch times so the DT doesn't need to worry about formatting and can use strict comparisions. "launched" -> "launched_epoch". "deadline" removed and used it to get "open_epoch", which is the total size of the window (deadline - launched) that the project was open for.
+
+```{r}
+# create lists to store results
+launched_epoch <- as.integer(as.POSIXct(df$launched))
+open_epoch <- as.integer(as.POSIXct(df$deadline)) - launched_epoch
+
+# add the new columns to the dataframe
+df = cbind(df, launched_epoch)
+df = cbind(df, open_epoch)
+# remove the currency column
+df = subset(df, select = -c(launched, deadline) )
+head(df)
+```
+
+### Work on the categories
+
+Maybe use category popularity rank rather than category? Don't want to bias with rankings since the DT will use thresholds
+
+Honestly might just need to let it keep the categories, since they feel really important and there isn't a good proxy. Could maybe strip out all examples in like half the categories to shrink the state space?
+
+For now and for the sake of getting it working initially, leave them as they are and don't consider the categories at all in the python code yet. 
+
+
+## Set the labels to 0 or 1, and move to last column
+
+Change target/labels to failed=0 and successful=1, and move them to the very last column to make the python data interpretation simpler and more straightforward.
+
+```{r}
+# create list to store target
+target <- numeric(length(df$state))
+# fill the list from our labels
+target[grepl("successful",df$state)] <- 1
+target[grepl("failed",df$state)] <- 0
+# add the target column to the end of the dataframe
+df = cbind(df, target)
+# remove the old state column
+df = subset(df, select = -c(state) )
+head(df)
+```
+
+# Split the dataset into training, validation, and testing
+
+The data are in a seemingly random, independent order (at least not in order by date or anything like that), so it doesn't matter which portion of the dataset we use for what.
+
+We will be using 60% for training, 20% for validation, and 20% for testing.
+
+```{r}
+# print the total number of rows in the full df
+length(df$target)
+
+# find the index of df that splits the first 20% from the latter 80%
+ind = floor(0.2 * length(df$target))
+df_test <- df[1:ind,]
+# set the remaining dataframe to the complement of df_test to make sure there is no crossover
+df_rem <- df[-c(1:ind),]
+# let's check the lengths to make sure it worked
+length(df_test$target)
+length(df_rem$target)
+
+# find the index of df that splits the first 75% from the latter 25%
+ind = floor(0.75 * length(df_rem$target))
+df_train <- df_rem[1:ind,]
+df_validate <- df_rem[-c(1:ind),]
+# check the lengths to make sure it worked
+length(df_train$target)
+length(df_validate$target)
+```
+
+We now have our dataframe split into df_test, df_train, and df_validate.
+
+# Output our pre-processed data to CSV files
+
+```{r eval=FALSE}
+write.csv(df_test,"data/ks_test.csv")
+write.csv(df_train,"data/ks_train.csv")
+write.csv(df_validate,"data/ks_validate.csv")
+```
+
+Pre-processing is complete, and the three chunks of data are stored in:
+
+ - ks_train.csv - 60% for training
+ - ks_validate.csv - 20% for validation
+ - ks_test.csv - 20% for testing
+
+
+
