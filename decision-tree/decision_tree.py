@@ -55,7 +55,7 @@ def split_group(parent, var_to_split, threshold):
 def find_best_split(parent):
     # need to iterate through all rows with each variable as threshold
     best_gini, split_var, split_thresh, children = 100, None, None, [None, None]
-    for var_index in range(len(parent.data[0])-1):
+    for var_index in range(3, len(parent.data[0])-1): #TODO start at 3 to skip categories
         for row in parent.data:
             # make a split
             c1, c2 = split_group(parent, var_index, row[var_index])
