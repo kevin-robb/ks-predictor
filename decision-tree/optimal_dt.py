@@ -29,7 +29,8 @@ def accuracy(y, p):
     num_labels = len(y)
     # we will say the model's guess is the choice with higher probability.
     for i in range(num_labels):
-        if y[i] == round(p[i][1]):
+        print("Values are y[i]=" + str(y[i]) + " and p[i][1]=" + str(p[i][1]))
+        if float(y[i]) == round(p[i][1]):
             num_correct += 1
     return float(num_correct)/float(num_labels)
 

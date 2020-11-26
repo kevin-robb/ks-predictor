@@ -182,6 +182,20 @@ df = subset(df, select = -c(state) )
 head(df)
 ```
 
+# Remove all rows that have 'NA' for a numeric variable
+
+Lines with title_length=0 cause title_caps_ratio=NaN. We could add a condition to prevent the divide by zero, but this is an easier way to just disregard those cases (since we are missing the title anyways).
+
+```{r}
+# list rows of data that have missing values
+#df[!complete.cases(df),]
+# reassign df to only keep full rows
+df <- df[complete.cases(df),]
+```
+
+
+
+
 # Split the dataset into training, validation, and testing
 
 The data are in a seemingly random, independent order (at least not in order by date or anything like that), so it doesn't matter which portion of the dataset we use for what.
