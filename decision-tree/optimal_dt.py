@@ -8,10 +8,11 @@
 from sklearn import tree
 from csv import reader
 from math import log
+from typing import List, Tuple
 
 ### Define functions to use later
 ## Calculate the cross-entropy of predictions and true labels.
-def cross_entropy(y, p):
+def cross_entropy(y:List[int,...], p:List[float,...]) -> float:
     # y[i] is list of real labels.
     # p[i][1] is the probability of predicting 1.
     m = len(y)
@@ -22,7 +23,7 @@ def cross_entropy(y, p):
     R = -1/m * sum_vals
     return R
 
-def accuracy(y, p):
+def accuracy(y:List[int,...], p:List[float,...]) -> float:
     # y[i] is list of real labels.
     # p[i][1] is the probability of predicting 1.
     num_correct = 0
@@ -42,7 +43,7 @@ header = None
 # - column 0 is a useless index
 # - columns 1-9 are data
 # - final column (10) is the target
-def get_data(filename):
+def get_data(filename:str) -> Tuple[List,List[int]]:
     global header
     filepath = "data/" + filename + ".csv"
     with open(filepath, 'r') as read_obj:
@@ -67,14 +68,17 @@ def get_data(filename):
     del header[0]
     return X, Y
 
-## Store the decision tree graphically for later reference
-def write_tree_to_file(tree, acc):
+## Store the decision tree graphically for later reference.
+# assumes tree has already been exported to string using
+# t = tree.export_text(clf,feature_names=header[0:len(header)-1])
+def write_tree_to_file(tree:str, acc:float):
     # w=write, a=append
     file1=open("optimal-dt.txt","w")
     file1.write(tree + "\nThe Accuracy is " + str(acc) + "\n")
     file1.close()
     print(tree)
     print("The Accuracy is " + str(acc))
+
 
 # main ------
 X_train, Y_train = get_data("ks_train")
