@@ -39,8 +39,7 @@ def accuracy(y, p):
 # - row 0 is the header
 header = None
 # - column 0 is a useless index
-# - columns 1 and 2 are categories, which we will not use for now
-# - columns 3-9 are data
+# - columns 1-9 are data
 # - final column (10) is the target
 def get_data(filename):
     global header
@@ -61,13 +60,9 @@ def get_data(filename):
         Y.append(line[len(line)-1])
         # remove the target from X_train
         del line[len(line)-1]
-        # remove the first three vars (index, cat, main_cat)
+        # remove the first var as well (the useless index)
         del line[0]
-        del line[0]
-        del line[0]
-    # reflect the var removals in the header
-    del header[0]
-    del header[0]
+    # reflect the var removal in the header
     del header[0]
     return X, Y
 

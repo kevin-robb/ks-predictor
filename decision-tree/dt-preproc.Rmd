@@ -15,7 +15,6 @@ Variables are
 ID,name,category,main_category,currency,deadline,goal,launched,pledged,state,backers,country,usd pledged,usd_pledged_real,usd_goal_real
 
 ```{r}
-#df_orig = read.csv("data/ks-projects-201801.csv")
 df_orig = read.csv("data/ks_orig.csv")
 #head(df_orig)
 names(df_orig)
@@ -159,8 +158,12 @@ Maybe use category popularity rank rather than category? Don't want to bias with
 
 Honestly might just need to let it keep the categories, since they feel really important and there isn't a good proxy. Could maybe strip out all examples in like half the categories to shrink the state space?
 
-For now and for the sake of getting it working initially, leave them as they are and don't consider the categories at all in the python code yet. 
+For now and for the sake of getting it working initially, remove the categories entirely. 
 
+```{r}
+df = subset(df, select = -c(category, main_category) )
+head(df)
+```
 
 ## Set the labels to 0 or 1, and move to last column
 
@@ -196,7 +199,7 @@ df_test <- df[1:ind,]
 df_rem <- df[-c(1:ind),]
 # let's check the lengths to make sure it worked
 length(df_test$target)
-length(df_rem$target)
+#length(df_rem$target)
 
 # find the index of df that splits the first 75% from the latter 25%
 ind = floor(0.75 * length(df_rem$target))
