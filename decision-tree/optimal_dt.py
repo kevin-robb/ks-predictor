@@ -29,7 +29,7 @@ def accuracy(y, p):
     num_labels = len(y)
     # we will say the model's guess is the choice with higher probability.
     for i in range(num_labels):
-        print("Values are y[i]=" + str(y[i]) + " and p[i][1]=" + str(p[i][1]))
+        #print("Values are y[i]=" + str(y[i]) + " and p[i][1]=" + str(p[i][1]))
         if float(y[i]) == round(p[i][1]):
             num_correct += 1
     return float(num_correct)/float(num_labels)
@@ -67,6 +67,15 @@ def get_data(filename):
     del header[0]
     return X, Y
 
+## Store the decision tree graphically for later reference
+def write_tree_to_file(tree, acc):
+    # w=write, a=append
+    file1=open("optimal-dt.txt","w")
+    file1.write(tree + "\nThe Accuracy is " + str(acc) + "\n")
+    file1.close()
+    print(tree)
+    print("The Accuracy is " + str(acc))
+
 # main ------
 X_train, Y_train = get_data("ks_train")
 X_val, Y_val = get_data("ks_validate")
@@ -76,11 +85,8 @@ X_test, Y_test = get_data("ks_test")
 clf = tree.DecisionTreeClassifier(criterion="gini", max_depth=5)
 clf = clf.fit(X_train, Y_train)
 
-# plot the tree
-#tree.plot_tree(clf)
-
 # export the tree as text
-t = tree.export_text(clf,feature_names=header[0:len(header)-1])
+#t = tree.export_text(clf,feature_names=header[0:len(header)-1])
 #print(t)
 
 # use the model for probabilistic prediction
@@ -114,9 +120,13 @@ Y_tv = Y_train + Y_val
 # define the classifier
 clf = tree.DecisionTreeClassifier(criterion="gini", max_depth=5)
 clf = clf.fit(X_tv, Y_tv)
+# export the tree as text
+t = tree.export_text(clf,feature_names=header[0:len(header)-1])
 # probabilistic prediction
 Y_pred = clf.predict_proba(X_test)
 # calculate the cross-entropy
 #print("The Cross Entropy is " + str(cross_entropy(Y_test, Y_pred)))
-print("The Accuracy is " + str(accuracy(Y_test, Y_pred)))
-
+# calculate the accuracy
+acc = accuracy(Y_test, Y_pred)
+# write the tree + acc to a file, & print to console
+write_tree_to_file(t, acc)
