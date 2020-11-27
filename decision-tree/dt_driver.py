@@ -47,9 +47,9 @@ df_test = get_data("ks_test_seg")
 # df_test = get_data("ks_test")
 
 # initialize the tree with the training data
-tree = DecisionTree(data=df_train)
+tree = DecisionTree(data=df_train, max_depth=5, min_node_size=20)
 print("tree initialization finished")
-root_node = tree.split(node=tree.root_node, max_depth=5, min_node_size=100)
+root_node = tree.split(node=tree.root_node)
 print("tree split finished")
 
 # display and store the tree

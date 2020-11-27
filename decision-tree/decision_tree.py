@@ -9,14 +9,24 @@ from typing import List, Tuple
 
 class DecisionTree:
     root_node = None
+    # parameters for stopping split recursion
+    max_depth, min_node_size = None, None
+    # make unique ID for all nodes. just for readability.
     cur_node_id = None
+    # don't let a variable be used more than once for a decision.
+    # list of ints (indices of variables).
+    allowed_vars = None
 
-    def __init__(self, data: List):
+    def __init__(self, data:List, max_depth:int, min_node_size:int):
         self.root_node = Node(node_id=0,data=data)
         self.cur_node_id = 1
+        self.allowed_vars = [*range(len(data[0])-1)]
+        print(self.allowed_vars)
+        self.max_depth = max_depth
+        self.min_node_size = min_node_size
 
     # we will be using gini index for the cost function.
-    def get_gini(self, partition: List[Node]) -> float:
+    def get_gini(self, partition:List[Node]) -> float:
         #print("get_gini called")
         tot_rows = len(partition)
         gini = 0.0
@@ -40,7 +50,7 @@ class DecisionTree:
         return gini
 
     # split the dataset and compare gini values of all splits.
-    def split_group(self, parent: Node, var_to_split: int, threshold: float) -> Tuple[Node, Node]:
+    def split_group(self, parent:Node, var_to_split:int, threshold:float) -> Tuple[Node, Node]:
         #print("split_group called")
         # define child groups
         c1 = Node(node_id=self.cur_node_id,data=[],depth=parent.depth+1)
@@ -55,12 +65,14 @@ class DecisionTree:
         return c1, c2
         
     # check the gini of all possible splits to find the best one
-    def find_best_split(self, parent: Node) -> Node:
+    def find_best_split(self, parent:Node, used_vars:List[int]) -> Node:
         print("find_best_split called")
         # need to iterate through all rows with each variable as threshold
         best_gini, split_var, split_thresh, children = 100, None, None, [None, None]
-        # check all vars except 0=index and -1=label
-        for var_index in range(1, len(parent.data[0])-1):
+        # check all vars except the label (last column)
+        for var_index in self.allowed_vars:
+            if var_index in used_vars:
+                continue
             for row in parent.data:
                 # make a split
                 c1, c2 = self.split_group(parent, var_index, row[var_index])
@@ -68,7 +80,7 @@ class DecisionTree:
                 gini = self.get_gini(partition=[c1,c2])
                 # if this is the new best, update our info
                 if gini < best_gini:
-                    print("found new best gini")
+                    print("found new best gini, with var " + str(var_index))
                     best_gini = gini
                     split_var, split_thresh = var_index, row[var_index]
                     children = [c1, c2]
@@ -77,29 +89,35 @@ class DecisionTree:
         # now that we know the best split, do it!
         parent.set_thresh(var=split_var,thresh=split_thresh)
         parent.set_children(children[0], children[1])
-        return parent
+        # remove the chosen variable from future consideration
+        #used_vars.append(var_index)
+        return parent, used_vars+[split_var]
         
-    def split(self, node: Node, max_depth: int, min_node_size: int) -> Node:
+    def split(self, node: Node, used_vars:List[int]=None) -> Node:
         print("split called")
         # if we have reached max recursion depth, stop. prevents overfitting.
-        if node.depth >= max_depth:
+        if node.depth >= self.max_depth:
             node.set_terminal()
             return node
+        # if used_vars is not provided, initialize it empty
+        if used_vars is None:
+            used_vars = []
         # first do the best split for this node
-        node = self.find_best_split(parent=node)
+        node, new_used_vars = self.find_best_split(parent=node, used_vars=used_vars)
+        print("have now used " + str(new_used_vars))
         # if either child is smaller than our min acceptable size, stop. prevents overfitting.
         # first check child 1.
-        if len(node.c1.data) < min_node_size:
+        if len(node.c1.data) < self.min_node_size:
             node.c1.set_terminal()
         else:
             # we aren't done yet. recurse into the child node.
-            node.c1 = self.split(node.c1, max_depth, min_node_size)
+            node.c1 = self.split(node.c1, used_vars=new_used_vars)
         # check child 2.
-        if len(node.c2.data) < min_node_size:
+        if len(node.c2.data) < self.min_node_size:
             node.c2.set_terminal()
         else:
             # recurse into the child node.
-            node.c2 = self.split(node.c2, max_depth, min_node_size)
+            node.c2 = self.split(node.c2, used_vars=new_used_vars)
         # when recursion has concluded, return the node
         return node
 

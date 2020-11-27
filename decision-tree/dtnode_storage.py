@@ -20,7 +20,7 @@ class NodeStorage:
         self.root = root_node
         self.arr = []
         self.filename = fname
-        self.header = header[1:]
+        self.header = header
     
     def max_nodes(self, root_node:Node) -> int:
         # find the max number of nodes in this tree.
