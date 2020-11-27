@@ -75,21 +75,25 @@ class NodeStorage:
         self.populate_tree(self.root, n=len(self.arr), pos=0)
         return self.root
 
-    def print_tree_inorder(self,node:Node):
+    def print_tree_inorder(self, node:Node):
         # helper function for printing tree inorder
         if node is None:
             return
         self.print_tree_inorder(node.c1)
-        print(node)
+        self.print_node(node)
         self.print_tree_inorder(node.c2)
     
-    def print_tree_preorder(self,node:Node):
+    def print_tree_preorder(self, node:Node):
         # helper function for printing tree preorder
         if node is None:
             return
-        print(node)
+        self.print_node(node)
         self.print_tree_preorder(node.c1)
         self.print_tree_preorder(node.c2)
+
+    def print_node(self, node:Node):
+        # helper function to print a single node
+        print("Node:split_var="+str(node.split_var)+",split_thresh="+str(node.split_thresh),",depth="+str(node.depth))
 
     def print_arr(self):
         # helper function to print arr.
@@ -136,7 +140,10 @@ class NodeStorage:
                 continue
             row_str = file_content[i].split(" ")
             row = [None for l in range(len(row_str))]
-            for j in range(len(row)):
+            # get the var index first, since it's an int
+            row[0] = int(row_str[0])
+            # get the rest of it. should just be one float, the var thresh
+            for j in range(1,len(row)):
                 row[j] = float(row_str[j])
             self.arr[i] = row
         # convert arr to tree and return

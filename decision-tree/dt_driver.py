@@ -37,16 +37,27 @@ def get_data(filename:str) -> List:
     return df
 
 ## main -------
-df_train = get_data("ks_train")
-df_val = get_data("ks_validate")
-df_test = get_data("ks_test")
+# run with segmented dataset
+df_train = get_data("ks_train_seg")
+df_val = get_data("ks_validate_seg")
+df_test = get_data("ks_test_seg")
+# run with full dataset
+# df_train = get_data("ks_train")
+# df_val = get_data("ks_validate")
+# df_test = get_data("ks_test")
 
 # initialize the tree with the training data
 tree = DecisionTree(data=df_train)
+print("tree initialization finished")
 root_node = tree.split(node=tree.root_node, max_depth=5, min_node_size=100)
+print("tree split finished")
 
 # display and store the tree
 dtns = NodeStorage(root_node=root_node, fname="ks_train")
+print("dtns initialization finished")
 dtns.print_tree_preorder(node=root_node)
+print("dtns printed preorder finished")
+dtns.print_tree_inorder(node=root_node)
+print("dtns printed inorder finished")
 
 

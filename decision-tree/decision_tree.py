@@ -15,6 +15,7 @@ class DecisionTree:
 
     # we will be using gini index for the cost function.
     def get_gini(self, partition: List[Node]) -> float:
+        #print("get_gini called")
         tot_rows = len(partition)
         gini = 0.0
         # check each group's uniformity
@@ -38,6 +39,7 @@ class DecisionTree:
 
     # split the dataset and compare gini values of all splits.
     def split_group(self, parent: Node, var_to_split: int, threshold: float) -> Tuple[Node, Node]:
+        #print("split_group called")
         # define child groups
         c1, c2 = Node(data=[],depth=parent.depth+1), Node(data=[],depth=parent.depth+1)
         # only numeric vars for now
@@ -50,6 +52,7 @@ class DecisionTree:
         
     # check the gini of all possible splits to find the best one
     def find_best_split(self, parent: Node) -> Node:
+        print("find_best_split called")
         # need to iterate through all rows with each variable as threshold
         best_gini, split_var, split_thresh, children = 100, None, None, [None, None]
         # check all vars except 0=index and -1=label
@@ -61,6 +64,7 @@ class DecisionTree:
                 gini = self.get_gini(partition=[c1,c2])
                 # if this is the new best, update our info
                 if gini < best_gini:
+                    print("found new best gini")
                     best_gini = gini
                     split_var, split_thresh = var_index, row[var_index]
                     children = [c1, c2]
@@ -72,6 +76,7 @@ class DecisionTree:
         return parent
         
     def split(self, node: Node, max_depth: int, min_node_size: int) -> Node:
+        print("split called")
         # if we have reached max recursion depth, stop. prevents overfitting.
         if node.depth >= max_depth:
             node.set_terminal()

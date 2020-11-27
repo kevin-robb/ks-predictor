@@ -23,7 +23,8 @@ names(df_orig)
 # Optionally subset for the sake of testing large datasets faster
 
 ```{r}
-df = df_orig[c(1:100),]
+#df = df_orig[c(1:100),]
+df = df_orig[c(1:500),] # segmented dataset
 #df = df_orig # use this line to run on the full dataset
 head(df)
 ```
@@ -194,8 +195,6 @@ df <- df[complete.cases(df),]
 ```
 
 
-
-
 # Split the dataset into training, validation, and testing
 
 The data are in a seemingly random, independent order (at least not in order by date or anything like that), so it doesn't matter which portion of the dataset we use for what.
@@ -229,9 +228,14 @@ We now have our dataframe split into df_test, df_train, and df_validate.
 # Output our pre-processed data to CSV files
 
 ```{r eval=FALSE}
-write.csv(df_test,"data/ks_test.csv")
-write.csv(df_train,"data/ks_train.csv")
-write.csv(df_validate,"data/ks_validate.csv")
+# working with segmented dataset for faser testing
+write.csv(df_test,"data/ks_test_seg.csv")
+write.csv(df_train,"data/ks_train_seg.csv")
+write.csv(df_validate,"data/ks_validate_seg.csv")
+# working with full real dataset
+# write.csv(df_test,"data/ks_test.csv")
+# write.csv(df_train,"data/ks_train.csv")
+# write.csv(df_validate,"data/ks_validate.csv")
 ```
 
 Pre-processing is complete, and the three chunks of data are stored in:
