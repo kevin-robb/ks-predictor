@@ -59,5 +59,8 @@ dtns.print_tree_preorder(node=root_node)
 print("dtns printed preorder finished")
 dtns.print_tree_inorder(node=root_node)
 print("dtns printed inorder finished")
+print("attempting to write to file")
+dtns.tree_to_file_readable(root_node=root_node)
+print("finished writing tree to file")
 
 

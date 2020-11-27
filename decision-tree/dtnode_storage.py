@@ -78,21 +78,49 @@ class NodeStorage:
         self.populate_tree(self.root, n=len(self.arr), pos=0)
         return self.root
 
-    def print_tree_inorder(self, node:Node):
+    def print_tree_inorder(self, node:Node, print_to_console:bool=True):
         # helper function for printing tree inorder
         if node is None:
             return
-        self.print_tree_inorder(node.c1)
-        self.print_node(node)
-        self.print_tree_inorder(node.c2)
+        if print_to_console:
+            self.print_tree_inorder(node.c1)
+            print(self.print_node(node))
+            self.print_tree_inorder(node.c2)
+        else:
+            # store tree in list rather than printing
+            ls = []
+            left = self.print_tree_inorder(node.c1,print_to_console)
+            if left is not None:
+                for el in left:
+                    ls.append(el)
+            ls.append(self.print_node(node))
+            right = self.print_tree_inorder(node.c2,print_to_console)
+            if right is not None:
+                for el in right:
+                    ls.append(el)
+            return ls
     
-    def print_tree_preorder(self, node:Node):
+    def print_tree_preorder(self, node:Node, print_to_console:bool=True):
         # helper function for printing tree preorder
         if node is None:
             return
-        self.print_node(node)
-        self.print_tree_preorder(node.c1)
-        self.print_tree_preorder(node.c2)
+        if print_to_console:
+            print(self.print_node(node))
+            self.print_tree_preorder(node.c1)
+            self.print_tree_preorder(node.c2)
+        else:
+            # store tree in list rather than printing
+            ls = [self.print_node(node)]
+            left = self.print_tree_preorder(node.c1,print_to_console)
+            if left is not None:
+                for el in left:
+                    ls.append(el)
+            right = self.print_tree_preorder(node.c2,print_to_console)
+            if right is not None:
+                for el in right:
+                    ls.append(el)
+            return ls
+        
 
     def print_node(self, node:Node):
         # helper function to print a single node
@@ -103,11 +131,9 @@ class NodeStorage:
         #     +",depth="+str(node.depth))
         # use the header to put var names and values
         if node.is_terminal:
-            print(spacing + "Node " + str(node.node_id) + ": decision=" + str(node.decision))
+            return spacing+"Node "+str(node.node_id)+": decision="+str(node.decision)
         else:
-            print(spacing + "Node " + str(node.node_id) + ": "
-                + self.header[node.split_var]
-                + " <= " + str(node.split_thresh))
+            return spacing+"Node "+str(node.node_id)+": "+self.header[node.split_var]+" <= "+str(node.split_thresh)
 
     def print_arr(self):
         # helper function to print arr.
@@ -116,11 +142,12 @@ class NodeStorage:
 
     ## File I/O
     def tree_to_file(self, root_node:Node=None, filename:str=None):
-        if filename == None:
+        # store the tree to a file in a recoverable format
+        if filename is None:
             filename = self.filename
-        # first make sure self.arr is using this node as root.
-        if root_node is not None:
-            self.root = root_node
+        # use the true root node if one is not provided
+        if root_node is None:
+            root_node = self.root
         self.tree_to_arr(root_node)
         # clear the file first (w=write mode).
         file1=open("trees/" + filename + ".txt","w")
@@ -138,7 +165,8 @@ class NodeStorage:
         file1.close()
 
     def file_to_tree(self, filename:str=None) -> Node:
-        if filename == None:
+        # read from a file and store the contents as a tree
+        if filename is None:
             filename = self.filename
         # open file in read mode.
         file1=open("trees/" + filename + ".txt", "r+")
@@ -163,4 +191,24 @@ class NodeStorage:
         # convert arr to tree and return
         self.root = self.arr_to_tree()
         return self.root
+    
+    def tree_to_file_readable(self, root_node:Node=None, filename:str=None):
+        # print tree to file in readable format for analysis by humans
+        if filename is None:
+            filename = self.filename
+        # use the true root node if one is not provided
+        if root_node is None:
+            root_node = self.root
+        # get our array to print
+        tree = self.print_tree_preorder(node=root_node,print_to_console=False)
+        # clear the file first (w=write mode).
+        file1=open("trees/" + filename + "_readable" + ".txt","w")
+        file1.write("")
+        file1.close()
+        # don't overwrite with each statement (a=append).
+        file1=open("trees/" + filename + "_readable" + ".txt","a")
+        # write the tree (list of strings) to the file
+        for l in tree:
+            file1.write(l + "\n")
+        file1.close()
 

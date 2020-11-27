@@ -1,0 +1,9 @@
+|Node 0: title_length <= 500
+|_Node 1: title_length <= 500
+|__Node 4417: title_length <= 500
+|___Node 7345: title_length <= 500
+|____Node 10273: decision=0
+|____Node 10274: decision=0
+|___Node 7346: decision=0
+|__Node 4418: decision=0
+|_Node 2: decision=0
