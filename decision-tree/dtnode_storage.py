@@ -13,11 +13,14 @@ class NodeStorage:
     arr = None
     # filename being written to
     filename = None
+    # list of variable names
+    header = None
 
-    def __init__(self, root_node:Node=None, fname:str=None):
+    def __init__(self, root_node:Node=None, fname:str=None, header:List=None):
         self.root = root_node
         self.arr = []
         self.filename = fname
+        self.header = header[1:]
     
     def max_nodes(self, root_node:Node) -> int:
         # find the max number of nodes in this tree.
@@ -93,7 +96,18 @@ class NodeStorage:
 
     def print_node(self, node:Node):
         # helper function to print a single node
-        print("Node:split_var="+str(node.split_var)+",split_thresh="+str(node.split_thresh),",depth="+str(node.depth))
+        spacing = "|" + "_" * (node.depth - 1)
+        # print(spacing + "Node "+str(node.node_id)
+        #     +":split_var="+str(node.split_var)
+        #     +",split_thresh="+str(node.split_thresh)
+        #     +",depth="+str(node.depth))
+        # use the header to put var names and values
+        if node.is_terminal:
+            print(spacing + "Node " + str(node.node_id) + ": decision=" + str(node.decision))
+        else:
+            print(spacing + "Node " + str(node.node_id) + ": "
+                + self.header[node.split_var]
+                + " <= " + str(node.split_thresh))
 
     def print_arr(self):
         # helper function to print arr.

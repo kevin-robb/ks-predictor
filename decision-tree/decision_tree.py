@@ -9,9 +9,11 @@ from typing import List, Tuple
 
 class DecisionTree:
     root_node = None
+    cur_node_id = None
 
     def __init__(self, data: List):
-        self.root_node = Node(data=data)
+        self.root_node = Node(node_id=0,data=data)
+        self.cur_node_id = 1
 
     # we will be using gini index for the cost function.
     def get_gini(self, partition: List[Node]) -> float:
@@ -41,7 +43,9 @@ class DecisionTree:
     def split_group(self, parent: Node, var_to_split: int, threshold: float) -> Tuple[Node, Node]:
         #print("split_group called")
         # define child groups
-        c1, c2 = Node(data=[],depth=parent.depth+1), Node(data=[],depth=parent.depth+1)
+        c1 = Node(node_id=self.cur_node_id,data=[],depth=parent.depth+1)
+        c2 = Node(node_id=self.cur_node_id+1,data=[],depth=parent.depth+1)
+        self.cur_node_id += 2
         # only numeric vars for now
         for row in parent.data:
             if row[var_to_split] <= threshold:

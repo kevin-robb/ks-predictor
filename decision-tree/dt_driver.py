@@ -53,7 +53,7 @@ root_node = tree.split(node=tree.root_node, max_depth=5, min_node_size=100)
 print("tree split finished")
 
 # display and store the tree
-dtns = NodeStorage(root_node=root_node, fname="ks_train")
+dtns = NodeStorage(root_node=root_node, fname="ks_train_seg", header=header)
 print("dtns initialization finished")
 dtns.print_tree_preorder(node=root_node)
 print("dtns printed preorder finished")

@@ -4,6 +4,7 @@ from typing import List, Tuple
 #from __future__ import annotations #only works in python 3.7 and up
 # define node class to make tree structure simpler
 class Node:
+    node_id=None #unique id to make debugging easier
     data = None
     c1, c2 = None, None
     depth = None
@@ -11,7 +12,8 @@ class Node:
     is_terminal = False
     decision = None
 
-    def __init__(self, data:List=None, depth:int=1, c1:'Node'=None, c2:'Node'=None, split_var:int=None, split_thresh:float=None):
+    def __init__(self, node_id:int=-1, data:List=None, depth:int=1, c1:'Node'=None, c2:'Node'=None, split_var:int=None, split_thresh:float=None):
+        self.node_id=node_id
         self.data = data
         self.c1 = c1
         self.c2 = c2
