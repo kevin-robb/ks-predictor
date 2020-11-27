@@ -30,7 +30,7 @@ def get_data(filename:str) -> List:
     del df[0]
 
     for line in df:
-        # remove the first var (the useless index)
+        # remove the first var (useless index)
         del line[0]
     # reflect the var removal in the header
     del header[0]
@@ -55,10 +55,10 @@ print("tree split finished")
 # display and store the tree
 dtns = NodeStorage(root_node=root_node, fname="ks_train_seg", header=header)
 print("dtns initialization finished")
+print("Printing tree preorder")
 dtns.print_tree_preorder(node=root_node)
-print("dtns printed preorder finished")
-dtns.print_tree_inorder(node=root_node)
-print("dtns printed inorder finished")
+#print("Printing tree inorder")
+#dtns.print_tree_inorder(node=root_node)
 print("attempting to write to file")
 dtns.tree_to_file_readable(root_node=root_node)
 print("finished writing tree to file")

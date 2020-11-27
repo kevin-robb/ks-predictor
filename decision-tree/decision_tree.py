@@ -28,21 +28,22 @@ class DecisionTree:
     # we will be using gini index for the cost function.
     def get_gini(self, partition:List[Node]) -> float:
         #print("get_gini called")
-        tot_rows = len(partition)
+        tot_rows = float(len(partition))
         gini = 0.0
         # check each group's uniformity
         for node in partition:
-            group_size = len(node.data)
+            group_size = float(len(node.data))
             # prevent div by 0 error
             if group_size == 0:
                 continue
             # count number of failed & success in this group
             num_fail, num_succ = 0, 0
             for row in node.data:
-                if row[-1] == 1:
+                if int(row[-1]) == 1:
                     num_succ += 1
                 else:
                     num_fail += 1
+            #print("node has " + str(num_succ) + " succ, " + str(num_fail) + " fail")
             # update the group's score accordingly
             group_gini = pow(num_succ/group_size, 2) + pow(num_fail/group_size, 2)
             # update the overall gini score
@@ -80,7 +81,7 @@ class DecisionTree:
                 gini = self.get_gini(partition=[c1,c2])
                 # if this is the new best, update our info
                 if gini < best_gini:
-                    print("found new best gini, with var " + str(var_index))
+                    print("found new best gini,"+ str(gini) +", with var " + str(var_index))
                     best_gini = gini
                     split_var, split_thresh = var_index, row[var_index]
                     children = [c1, c2]
