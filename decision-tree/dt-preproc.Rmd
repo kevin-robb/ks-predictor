@@ -24,7 +24,7 @@ names(df_orig)
 
 ```{r}
 #df = df_orig[c(1:100),]
-df = df_orig[c(1:500),] # segmented dataset
+df = df_orig[c(1:5000),] # segmented dataset
 #df = df_orig # use this line to run on the full dataset
 head(df)
 ```

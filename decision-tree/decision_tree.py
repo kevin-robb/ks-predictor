@@ -28,26 +28,29 @@ class DecisionTree:
     # we will be using gini index for the cost function.
     def get_gini(self, partition:List[Node]) -> float:
         #print("get_gini called")
-        tot_rows = float(len(partition))
+        # we will always have two child nodes to compare
+        tot_rows = float(len(partition[0].data) + len(partition[1].data))
         gini = 0.0
-        # check each group's uniformity
+        # check each child node's uniformity
         for node in partition:
-            group_size = float(len(node.data))
+            num_rows = float(len(node.data))
             # prevent div by 0 error
-            if group_size == 0:
+            if num_rows == 0:
                 continue
-            # count number of failed & success in this group
-            num_fail, num_succ = 0, 0
+            # count number of failed & success in this node
+            num_fail, num_succ = 0.0, 0.0
             for row in node.data:
                 if int(row[-1]) == 1:
-                    num_succ += 1
+                    num_succ += 1.0
                 else:
-                    num_fail += 1
-            #print("node has " + str(num_succ) + " succ, " + str(num_fail) + " fail")
-            # update the group's score accordingly
-            group_gini = pow(num_succ/group_size, 2) + pow(num_fail/group_size, 2)
-            # update the overall gini score
-            gini += (1.0 - group_gini) * (group_size / tot_rows)
+                    num_fail += 1.0
+            # we can compute the proportion of each
+            prop_succ = num_succ / num_rows
+            prop_fail = num_fail / num_rows
+            # the gini index for this node is then
+            node_gini = 1.0 - (prop_succ**2 + prop_fail**2)
+            # we then weight by the size of the node relative to the parent
+            gini += node_gini * num_rows / tot_rows
         return gini
 
     # split the dataset and compare gini values of all splits.
@@ -79,6 +82,7 @@ class DecisionTree:
                 c1, c2 = self.split_group(parent, var_index, row[var_index])
                 # evaluate this split
                 gini = self.get_gini(partition=[c1,c2])
+                #print("Checked kids " + str(len(c1.data)) + "," + str(len(c2.data)) + " and got Gini " + str(gini))
                 # if this is the new best, update our info
                 if gini < best_gini:
                     print("found new best gini,"+ str(gini) +", with var " + str(var_index))
@@ -94,7 +98,7 @@ class DecisionTree:
         #used_vars.append(var_index)
         return parent, used_vars+[split_var]
         
-    def split(self, node: Node, used_vars:List[int]=None) -> Node:
+    def split(self, node:Node, used_vars:List[int]=None) -> Node:
         print("split called")
         # if we have reached max recursion depth, stop. prevents overfitting.
         if node.depth >= self.max_depth:
@@ -108,13 +112,13 @@ class DecisionTree:
         print("have now used " + str(new_used_vars))
         # if either child is smaller than our min acceptable size, stop. prevents overfitting.
         # first check child 1.
-        if len(node.c1.data) < self.min_node_size:
+        if len(node.c1.data) < self.min_node_size: #node.c1 is None or 
             node.c1.set_terminal()
         else:
             # we aren't done yet. recurse into the child node.
             node.c1 = self.split(node.c1, used_vars=new_used_vars)
         # check child 2.
-        if len(node.c2.data) < self.min_node_size:
+        if len(node.c2.data) < self.min_node_size: #node.c2 is None or 
             node.c2.set_terminal()
         else:
             # recurse into the child node.
