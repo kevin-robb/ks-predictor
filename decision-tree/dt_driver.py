@@ -15,7 +15,7 @@ def accuracy(y, p):
     # we will say the model's guess is the choice with higher probability.
     for i in range(num_labels):
         #print("Values are y[i]=" + str(y[i]) + " and p[i][1]=" + str(p[i][1]))
-        if float(y[i]) == round(p[i][1]):
+        if y[i] == p[i]:
             num_correct += 1
     return float(num_correct)/float(num_labels)
 
@@ -57,6 +57,13 @@ def init_dt_data(fname_suffix:str=""):
     df_test = get_data("ks_test"+fname_suffix)
     return df_train, df_val, df_test
 
+def get_labels(df:List) -> List[int]:
+    # get the labels (last column) of dataframe df as a list
+    lab = []
+    for line in df:
+        lab.append(int(line[-1]))
+    return lab
+
 ## main -------
 run_full = False
 # if run_full:
@@ -65,7 +72,7 @@ run_full = False
 # else:
 #     # run with segmented dataset (faster)
 #     df_train, df_val, df_tests = init_dt_data("_seg")
-df_train, df_val, df_tests = init_dt_data("_full") if run_full else init_dt_data("_seg")
+df_train, df_val, df_test = init_dt_data("_full") if run_full else init_dt_data("_seg")
 
 # initialize the tree with the training data
 tree = DecisionTree(data=df_train, max_depth=5, min_node_size=50)
@@ -80,8 +87,12 @@ print("Printing tree preorder")
 dtns.print_tree_preorder(node=root_node)
 #print("Printing tree inorder")
 #dtns.print_tree_inorder(node=root_node)
+print("Computing the accuracy")
+test_labels = get_labels(df_test)
+test_pred = tree.predict_list(examples=df_test,root_node=root_node)
+acc = accuracy(test_labels,test_pred)
 print("attempting to write to file")
-dtns.tree_to_file_readable(root_node=root_node)
+dtns.tree_to_file_readable(root_node=root_node, acc=acc)
 print("finished writing tree to file")
 
 

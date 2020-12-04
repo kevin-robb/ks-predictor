@@ -39,7 +39,7 @@ class Node:
         # count number of failed & success in this group.
         num_fail, num_succ = 0, 0
         for row in self.data:
-            if row[-1] == 1:
+            if int(row[-1]) == 1:
                 num_succ += 1
             else:
                 num_fail += 1

@@ -134,7 +134,9 @@ class DecisionTree:
 
     # test our trained tree with an example list of rows.
     # will return predictions as list of 0s and 1s
-    def predict_list(self, root_node: Node, examples: List) -> List[int]:
+    def predict_list(self, examples:List, root_node:Node=None) -> List[int]:
+        if root_node is None:
+            root_node = self.root_node
         num_examples = len(examples)
         decisions = [None for i in range(num_examples)]
         for i in range(num_examples):

@@ -192,7 +192,7 @@ class NodeStorage:
         self.root = self.arr_to_tree()
         return self.root
     
-    def tree_to_file_readable(self, root_node:Node=None, filename:str=None):
+    def tree_to_file_readable(self, root_node:Node=None, filename:str=None, acc:float=-1):
         # print tree to file in readable format for analysis by humans
         if filename is None:
             filename = self.filename
@@ -210,5 +210,7 @@ class NodeStorage:
         # write the tree (list of strings) to the file
         for l in tree:
             file1.write(l + "\n")
+        # write the accuracy at the end
+        file1.write("\nThe Accuracy is " + str(acc))
         file1.close()
 
