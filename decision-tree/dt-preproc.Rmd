@@ -245,6 +245,8 @@ with_cats = TRUE
 suffix = ""
 if (segmented) {
   suffix = paste(suffix, "_seg", sep="")
+} else {
+  suffix = paste(suffix, "_full", sep="")
 }
 if (with_cats) {
   suffix = paste(suffix, "_cat", sep="")

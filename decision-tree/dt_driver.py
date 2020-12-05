@@ -37,15 +37,11 @@ def get_data(filename:str) -> List:
     del header[0]
     return df
 
-def get_filename(run_full:bool):
+def get_filename(suffix:str):
     # Generate a unique filename to save the tree (based on datetime).
     # this is mainly for testing so files don't get overwritten.
     dt = datetime.now()
-    fname = "ks_"
-    if run_full:
-        fname += "full_"
-    else:
-        fname += "seg_"
+    fname = "ks_" + suffix
     fname += dt.strftime("%Y-%m-%d-%H-%M")
     print("Tree will be stored as " + fname + ".txt")
     return fname
@@ -65,14 +61,12 @@ def get_labels(df:List) -> List[int]:
     return lab
 
 ## main -------
-run_full = False
-# if run_full:
-#     # run with full dataset (very slow)
-#     df_train, df_val, df_tests = init_dt_data("_full")
-# else:
-#     # run with segmented dataset (faster)
-#     df_train, df_val, df_tests = init_dt_data("_seg")
-df_train, df_val, df_test = init_dt_data("_full") if run_full else init_dt_data("_seg")
+# set tree name and get data
+run_seg = True
+run_cats = True
+suffix = "" + "_seg" if run_seg else "_full"
+suffix += "_cat" if run_cats else ""
+df_train, df_val, df_test = init_dt_data(suffix)
 
 # initialize the tree with the training data.
 # now that we have finalized the tree, train with both training & validation data
@@ -82,7 +76,7 @@ root_node = tree.split(node=tree.root_node)
 print("tree split finished")
 
 # display and store the tree
-dtns = NodeStorage(root_node=root_node, fname=get_filename(run_full), header=header)
+dtns = NodeStorage(root_node=root_node, fname=get_filename(suffix), header=header)
 print("dtns initialization finished")
 print("\nPrinting tree preorder")
 dtns.print_tree_preorder(node=root_node)

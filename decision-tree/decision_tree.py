@@ -21,6 +21,7 @@ class DecisionTree:
         self.root_node = Node(node_id=0,data=data)
         self.cur_node_id = 1
         self.allowed_vars = [*range(len(data[0])-1)]
+        # TODO to not consider the categories, make this [*range(len(data[0])-16)]
         print(self.allowed_vars)
         self.max_depth = max_depth
         self.min_node_size = min_node_size
@@ -103,7 +104,7 @@ class DecisionTree:
         # if we have reached max recursion depth, stop. 
         # if the node is almost entirely one label, stop.
         # prevents overfitting.
-        if node.depth >= self.max_depth or node.purity < 0.05:
+        if node.depth >= self.max_depth: #or node.purity < 0.05:
             node.set_terminal()
             return node
         # if used_vars is not provided, initialize it empty

@@ -1,7 +1,4 @@
-
 from typing import List, Tuple
-# allow us to type hint c1 and c2 as Node
-#from __future__ import annotations #only works in python 3.7 and up
 # define node class to make tree structure simpler
 class Node:
     node_id=None #unique id to make debugging easier
