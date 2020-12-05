@@ -155,16 +155,27 @@ head(df)
 
 ### Work on the categories
 
-Maybe use category popularity rank rather than category? Don't want to bias with rankings since the DT will use thresholds
+Initially, remove them entirely.
 
-Honestly might just need to let it keep the categories, since they feel really important and there isn't a good proxy. Could maybe strip out all examples in like half the categories to shrink the state space?
-
-For now and for the sake of getting it working initially, remove the categories entirely. 
+Better, try using one-hot encoding for the main categories.
 
 ```{r}
+df_cats <- df
+categories = c("Art","Comics","Crafts","Dance","Design","Fashion","Film & Video","Food","Games","Journalism","Music","Photography","Publishing","Technology","Theater")
+# Art, Comics, Crafts, Dance, Design, Fashion, Film & Video, Food, Games, Journalism, Music, Photography, Publishing, Technology, and Theater.
+for (i in (1:15)) {
+  cat <- numeric(length(df$main_category))
+  cat[grepl(categories[i],df$main_category)] <- 1
+  df_cats = cbind(df_cats, cat)
+}
+names(df_cats) <- c(names(df), categories)
+#head(df_cats)
+# remove the original categories
+df <- df_cats
 df = subset(df, select = -c(category, main_category) )
 head(df)
 ```
+
 
 ## Set the labels to 0 or 1, and move to last column
 
@@ -228,14 +239,20 @@ We now have our dataframe split into df_test, df_train, and df_validate.
 # Output our pre-processed data to CSV files
 
 ```{r eval=FALSE}
-# working with segmented dataset for faser testing
-write.csv(df_test,"data/ks_test_seg.csv")
-write.csv(df_train,"data/ks_train_seg.csv")
-write.csv(df_validate,"data/ks_validate_seg.csv")
-# working with full real dataset
-# write.csv(df_test,"data/ks_test.csv")
-# write.csv(df_train,"data/ks_train.csv")
-# write.csv(df_validate,"data/ks_validate.csv")
+# format the filename to represent conditions
+segmented = TRUE
+with_cats = TRUE
+suffix = ""
+if (segmented) {
+  suffix = paste(suffix, "_seg", sep="")
+}
+if (with_cats) {
+  suffix = paste(suffix, "_cat", sep="")
+}
+# now output to file
+write.csv(df_test, paste("data/ks_test", suffix, ".csv", sep=""))
+write.csv(df_train, paste("data/ks_train", suffix, ".csv", sep=""))
+write.csv(df_validate, paste("data/ks_validate", suffix, ".csv", sep=""))
 ```
 
 Pre-processing is complete, and the three chunks of data are stored in:
