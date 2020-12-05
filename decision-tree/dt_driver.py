@@ -74,8 +74,9 @@ run_full = False
 #     df_train, df_val, df_tests = init_dt_data("_seg")
 df_train, df_val, df_test = init_dt_data("_full") if run_full else init_dt_data("_seg")
 
-# initialize the tree with the training data
-tree = DecisionTree(data=df_train, max_depth=5, min_node_size=50)
+# initialize the tree with the training data.
+# now that we have finalized the tree, train with both training & validation data
+tree = DecisionTree(data=df_train+df_val, max_depth=5, min_node_size=50)
 print("tree initialization finished")
 root_node = tree.split(node=tree.root_node)
 print("tree split finished")
@@ -83,14 +84,15 @@ print("tree split finished")
 # display and store the tree
 dtns = NodeStorage(root_node=root_node, fname=get_filename(run_full), header=header)
 print("dtns initialization finished")
-print("Printing tree preorder")
+print("\nPrinting tree preorder")
 dtns.print_tree_preorder(node=root_node)
 #print("Printing tree inorder")
 #dtns.print_tree_inorder(node=root_node)
-print("Computing the accuracy")
+print("\nComputing the accuracy")
 test_labels = get_labels(df_test)
 test_pred = tree.predict_list(examples=df_test,root_node=root_node)
 acc = accuracy(test_labels,test_pred)
+print("Accuracy is " + str(acc) + "\n")
 print("attempting to write to file")
 dtns.tree_to_file_readable(root_node=root_node, acc=acc)
 print("finished writing tree to file")

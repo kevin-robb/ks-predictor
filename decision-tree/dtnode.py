@@ -11,6 +11,7 @@ class Node:
     split_var, split_thresh = None, None
     is_terminal = False
     decision = None
+    purity = None
 
     def __init__(self, node_id:int=-1, data:List=None, depth:int=1, c1:'Node'=None, c2:'Node'=None, split_var:int=None, split_thresh:float=None):
         self.node_id=node_id
@@ -18,8 +19,28 @@ class Node:
         self.c1 = c1
         self.c2 = c2
         self.depth = depth
-        self.split_var = split_var # int
-        self.split_thresh = split_thresh # float
+        self.split_var = split_var
+        self.split_thresh = split_thresh
+        # check the size and set terminal if too small
+        # if len(self.data) < self.min_node_size:
+        #     self.set_terminal()
+        # compute the purity
+        self.purity = self.compute_purity()
+
+    def compute_purity(self):
+        if len(self.data) <= 1:
+            return 0
+        # count number of success in this group.
+        num_succ = 0
+        for row in self.data:
+            if int(row[-1]) == 1:
+                num_succ += 1
+        # set the purity
+        purity = float(num_succ) / float(len(self.data))
+        # could be purely success or failure
+        if purity > 0.5:
+            purity = 1 - purity
+        return purity
     
     def set_thresh(self, var:int, thresh:float):
         self.split_var = var

@@ -1,0 +1,5 @@
+|Node 0: open_epoch <= 2194218
+|_Node 58147: decision=1
+|_Node 58148: decision=0
+
+The Accuracy is 0.5861678004535147

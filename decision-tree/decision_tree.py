@@ -100,8 +100,10 @@ class DecisionTree:
         
     def split(self, node:Node, used_vars:List[int]=None) -> Node:
         print("split called")
-        # if we have reached max recursion depth, stop. prevents overfitting.
-        if node.depth >= self.max_depth:
+        # if we have reached max recursion depth, stop. 
+        # if the node is almost entirely one label, stop.
+        # prevents overfitting.
+        if node.depth >= self.max_depth or node.purity < 0.05:
             node.set_terminal()
             return node
         # if used_vars is not provided, initialize it empty
