@@ -124,16 +124,15 @@ class NodeStorage:
 
     def print_node(self, node:Node):
         # helper function to print a single node
-        spacing = "|" + "_" * (node.depth - 1)
-        # print(spacing + "Node "+str(node.node_id)
-        #     +":split_var="+str(node.split_var)
-        #     +",split_thresh="+str(node.split_thresh)
-        #     +",depth="+str(node.depth))
+        spacing = "|" + "-" * (node.depth - 1)
         # use the header to put var names and values
         if node.is_terminal:
             return spacing+"Node "+str(node.node_id)+": decision="+str(node.decision)
         else:
-            return spacing+"Node "+str(node.node_id)+": "+self.header[node.split_var]+" <= "+str(node.split_thresh)
+            if node.var_type == 1: #numeric, use <=
+                return spacing+"Node "+str(node.node_id)+": "+self.header[node.split_var]+" <= "+str(node.split_thresh)
+            else: #boolean, use ==
+                return spacing+"Node "+str(node.node_id)+": "+self.header[node.split_var]+" == "+str(node.split_thresh)
 
     def print_arr(self):
         # helper function to print arr.

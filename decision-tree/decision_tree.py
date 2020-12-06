@@ -16,6 +16,10 @@ class DecisionTree:
     # don't let a variable be used more than once for a decision.
     # list of ints (indices of variables).
     allowed_vars = None
+    # keep track of types of variables to speed up for booleans.
+    # 1=numeric, 2=bool 0 or 1)
+    var_types = [1,1,1,1,1,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2]
+    #"goal","usd_goal_real","title_length","title_punc","title_caps_ratio","currency_is_usd","country_is_us","launched_epoch","open_epoch","Art","Comics","Crafts","Dance","Design","Fashion","Film & Video","Food","Games","Journalism","Music","Photography","Publishing","Technology","Theater","target"
 
     def __init__(self, data:List, max_depth:int, min_node_size:int):
         self.root_node = Node(node_id=0,data=data)
@@ -61,12 +65,19 @@ class DecisionTree:
         c1 = Node(node_id=self.cur_node_id,data=[],depth=parent.depth+1)
         c2 = Node(node_id=self.cur_node_id+1,data=[],depth=parent.depth+1)
         self.cur_node_id += 2
-        # only numeric vars for now
-        for row in parent.data:
-            if row[var_to_split] <= threshold:
-                c1.data.append(row)
-            else:
-                c2.data.append(row)
+        # check variable type
+        if self.var_types[var_to_split] == 1: # numeric
+            for row in parent.data:
+                if row[var_to_split] <= threshold:
+                    c1.data.append(row)
+                else:
+                    c2.data.append(row)
+        else: # boolean
+            for row in parent.data:
+                if int(row[var_to_split]) == threshold:
+                    c1.data.append(row)
+                else:
+                    c2.data.append(row)
         return c1, c2
         
     # check the gini of all possible splits to find the best one
@@ -78,22 +89,39 @@ class DecisionTree:
         for var_index in self.allowed_vars:
             if var_index in used_vars:
                 continue
-            for row in parent.data:
-                # make a split
-                c1, c2 = self.split_group(parent, var_index, row[var_index])
-                # evaluate this split
-                gini = self.get_gini(partition=[c1,c2])
-                #print("Checked kids " + str(len(c1.data)) + "," + str(len(c2.data)) + " and got Gini " + str(gini))
-                # if this is the new best, update our info
-                if gini < best_gini:
-                    print("found new best gini,"+ str(gini) +", with var " + str(var_index))
-                    best_gini = gini
-                    split_var, split_thresh = var_index, row[var_index]
-                    children = [c1, c2]
-                else: # free up space
-                    del c1, c2
+            # check var type
+            if self.var_types[var_index] == 1: #numeric
+                for row in parent.data:
+                    # make a split
+                    c1, c2 = self.split_group(parent, var_index, row[var_index])
+                    # evaluate this split
+                    gini = self.get_gini(partition=[c1,c2])
+                    #print("Checked kids " + str(len(c1.data)) + "," + str(len(c2.data)) + " and got Gini " + str(gini))
+                    # if this is the new best, update our info
+                    if gini < best_gini:
+                        print("found new best gini,"+ str(gini) +", with var " + str(var_index))
+                        best_gini = gini
+                        split_var, split_thresh = var_index, row[var_index]
+                        children = [c1, c2]
+                    else: # free up space
+                        del c1, c2
+            else: # self.var_types[var_index] == 2: #boolean, either 0 or 1
+                for thresh in [0,1]:
+                    # make a split
+                    c1, c2 = self.split_group(parent, var_index, thresh)
+                    # evaluate this split
+                    gini = self.get_gini(partition=[c1,c2])
+                    #print("Checked kids " + str(len(c1.data)) + "," + str(len(c2.data)) + " and got Gini " + str(gini))
+                    # if this is the new best, update our info
+                    if gini < best_gini:
+                        print("found new best gini,"+ str(gini) +", with var " + str(var_index))
+                        best_gini = gini
+                        split_var, split_thresh = var_index, thresh
+                        children = [c1, c2]
+                    else: # free up space
+                        del c1, c2
         # now that we know the best split, do it!
-        parent.set_thresh(var=split_var,thresh=split_thresh)
+        parent.set_thresh(var=split_var,thresh=split_thresh,var_type=self.var_types[split_var])
         parent.set_children(children[0], children[1])
         # remove the chosen variable from future consideration
         #used_vars.append(var_index)

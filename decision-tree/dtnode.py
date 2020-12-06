@@ -5,7 +5,7 @@ class Node:
     data = None
     c1, c2 = None, None
     depth = None
-    split_var, split_thresh = None, None
+    split_var, split_thresh, var_type = None, None, None
     is_terminal = False
     decision = None
     purity = None
@@ -39,9 +39,10 @@ class Node:
             purity = 1 - purity
         return purity
     
-    def set_thresh(self, var:int, thresh:float):
+    def set_thresh(self, var:int, thresh:float, var_type:int=1):
         self.split_var = var
         self.split_thresh = thresh
+        self.var_type = var_type
 
     def set_children(self, c1:'Node', c2:'Node'):
         self.c1 = c1
@@ -72,8 +73,15 @@ class Node:
         if self.is_terminal:
             return self.decision
         else:
-            # evaluate the example row and check the relevant child node
-            if example[self.split_var] <= self.split_thresh:
-                return self.c1.get_decision(example)
-            else:
-                return self.c2.get_decision(example)
+            # evaluate the example row and check the relevant child node.
+            # check the type
+            if self.var_type == 1: #numeric
+                if example[self.split_var] <= self.split_thresh:
+                    return self.c1.get_decision(example)
+                else:
+                    return self.c2.get_decision(example)
+            else: #boolean
+                if float(example[self.split_var]) == self.split_thresh:
+                    return self.c1.get_decision(example)
+                else:
+                    return self.c2.get_decision(example)

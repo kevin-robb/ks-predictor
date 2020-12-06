@@ -64,8 +64,8 @@ def get_labels(df:List) -> List[int]:
 # set tree name and get data
 run_seg = True
 run_cats = True
-suffix = "" + "_seg" if run_seg else "_full"
-suffix += "_cat" if run_cats else ""
+suffix = "" + "seg_" if run_seg else "full_"
+suffix += "cat_" if run_cats else ""
 df_train, df_val, df_test = init_dt_data(suffix)
 
 # initialize the tree with the training data.

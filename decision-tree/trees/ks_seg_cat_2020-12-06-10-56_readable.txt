@@ -1,0 +1,25 @@
+|Node 0: open_epoch <= 2194218
+|-Node 44039: Technology == 0
+|--Node 54491: launched_epoch <= 1510338024
+|---Node 58553: title_caps_ratio <= 0.0555555555555556
+|----Node 62397: decision=0
+|----Node 62398: decision=1
+|---Node 58554: decision=0
+|--Node 54492: decision=0
+|-Node 44040: title_punc <= 0
+|--Node 81821: launched_epoch <= 1402115088
+|---Node 110931: Publishing == 0
+|----Node 117023: decision=0
+|----Node 117024: decision=0
+|---Node 110932: title_caps_ratio <= 0.0606060606060606
+|----Node 122577: decision=0
+|----Node 122578: decision=0
+|--Node 81822: Music == 0
+|---Node 142091: Comics == 0
+|----Node 157513: decision=0
+|----Node 157514: decision=1
+|---Node 142092: title_caps_ratio <= 0.117647058823529
+|----Node 159461: decision=0
+|----Node 159462: decision=1
+
+The Accuracy is 0.5975056689342404
