@@ -12,7 +12,7 @@ from typing import List, Tuple
 
 ### Define functions to use later
 ## Calculate the cross-entropy of predictions and true labels.
-def cross_entropy(y:List[int,...], p:List[float,...]) -> float:
+def cross_entropy(y:List[int], p:List) -> float:
     # y[i] is list of real labels.
     # p[i][1] is the probability of predicting 1.
     m = len(y)
@@ -23,7 +23,7 @@ def cross_entropy(y:List[int,...], p:List[float,...]) -> float:
     R = -1/m * sum_vals
     return R
 
-def accuracy(y:List[int,...], p:List[float,...]) -> float:
+def accuracy(y:List[int], p:List) -> float:
     # y[i] is list of real labels.
     # p[i][1] is the probability of predicting 1.
     num_correct = 0
@@ -73,7 +73,7 @@ def get_data(filename:str) -> Tuple[List,List[int]]:
 # t = tree.export_text(clf,feature_names=header[0:len(header)-1])
 def write_tree_to_file(tree:str, acc:float):
     # w=write, a=append
-    file1=open("optimal-dt.txt","w")
+    file1=open("trees/optimal_dt.txt","w")
     file1.write(tree + "\nThe Accuracy is " + str(acc) + "\n")
     file1.close()
     print(tree)
@@ -81,41 +81,19 @@ def write_tree_to_file(tree:str, acc:float):
 
 
 # main ------
-X_train, Y_train = get_data("ks_train")
-X_val, Y_val = get_data("ks_validate")
-X_test, Y_test = get_data("ks_test")
+X_train, Y_train = get_data("ks_train_seg_cat")
+X_val, Y_val = get_data("ks_validate_seg_cat")
+X_test, Y_test = get_data("ks_test_seg_cat")
 
 # define the classifier w/ our training data
 clf = tree.DecisionTreeClassifier(criterion="gini", max_depth=5)
 clf = clf.fit(X_train, Y_train)
 
-# export the tree as text
-#t = tree.export_text(clf,feature_names=header[0:len(header)-1])
-#print(t)
-
 # use the model for probabilistic prediction
 Y_pred = clf.predict_proba(X_val)
 
-# print the results to compare
-# for i in range(len(Y_val)):
-#     guess = 1
-#     if Y_pred[i][0] > 0.5:
-#         guess = 0
-#     print(Y_val[i], guess, Y_pred[i])
-
 #print("The Cross Entropy is " + str(cross_entropy(Y_val, Y_pred)))
 print("The Accuracy is " + str(accuracy(Y_val, Y_pred)))
-
-# # we could instead use information gain (but my implementation uses Gini)
-# clf = tree.DecisionTreeClassifier(criterion="entropy", max_depth=5)
-# clf = clf.fit(X_train, Y_train)
-# # export the tree as text
-# t = tree.export_text(clf,feature_names=header[0:len(header)-1])
-# #print(t)
-# # use the model for probabilistic prediction
-# Y_pred = clf.predict_proba(X_val)
-# print("The Cross Entropy is " + str(cross_entropy(Y_val, Y_pred)))
-
 
 # create a new dataset of both the training and validation data
 X_tv = X_train + X_val

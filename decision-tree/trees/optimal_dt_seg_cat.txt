@@ -1,0 +1,84 @@
+|--- usd_goal_real <= 6080.35
+|   |--- open_epoch <= 2214995.50
+|   |   |--- launched_epoch <= 1510395264.00
+|   |   |   |--- goal <= 130.00
+|   |   |   |   |--- Technology <= 0.50
+|   |   |   |   |   |--- class: 1
+|   |   |   |   |--- Technology >  0.50
+|   |   |   |   |   |--- class: 0
+|   |   |   |--- goal >  130.00
+|   |   |   |   |--- Theater <= 0.50
+|   |   |   |   |   |--- class: 1
+|   |   |   |   |--- Theater >  0.50
+|   |   |   |   |   |--- class: 1
+|   |   |--- launched_epoch >  1510395264.00
+|   |   |   |--- class: 0
+|   |--- open_epoch >  2214995.50
+|   |   |--- launched_epoch <= 1396927360.00
+|   |   |   |--- Publishing <= 0.50
+|   |   |   |   |--- open_epoch <= 3799523.00
+|   |   |   |   |   |--- class: 1
+|   |   |   |   |--- open_epoch >  3799523.00
+|   |   |   |   |   |--- class: 0
+|   |   |   |--- Publishing >  0.50
+|   |   |   |   |--- usd_goal_real <= 425.00
+|   |   |   |   |   |--- class: 1
+|   |   |   |   |--- usd_goal_real >  425.00
+|   |   |   |   |   |--- class: 0
+|   |   |--- launched_epoch >  1396927360.00
+|   |   |   |--- title_punc <= 0.50
+|   |   |   |   |--- launched_epoch <= 1466515008.00
+|   |   |   |   |   |--- class: 0
+|   |   |   |   |--- launched_epoch >  1466515008.00
+|   |   |   |   |   |--- class: 0
+|   |   |   |--- title_punc >  0.50
+|   |   |   |   |--- title_caps_ratio <= 0.03
+|   |   |   |   |   |--- class: 0
+|   |   |   |   |--- title_caps_ratio >  0.03
+|   |   |   |   |   |--- class: 0
+|--- usd_goal_real >  6080.35
+|   |--- usd_goal_real <= 48487.50
+|   |   |--- title_punc <= 0.50
+|   |   |   |--- title_caps_ratio <= 0.06
+|   |   |   |   |--- Art <= 0.50
+|   |   |   |   |   |--- class: 0
+|   |   |   |   |--- Art >  0.50
+|   |   |   |   |   |--- class: 0
+|   |   |   |--- title_caps_ratio >  0.06
+|   |   |   |   |--- open_epoch <= 5101220.00
+|   |   |   |   |   |--- class: 0
+|   |   |   |   |--- open_epoch >  5101220.00
+|   |   |   |   |   |--- class: 0
+|   |   |--- title_punc >  0.50
+|   |   |   |--- open_epoch <= 3806759.00
+|   |   |   |   |--- open_epoch <= 2604407.00
+|   |   |   |   |   |--- class: 0
+|   |   |   |   |--- open_epoch >  2604407.00
+|   |   |   |   |   |--- class: 1
+|   |   |   |--- open_epoch >  3806759.00
+|   |   |   |   |--- launched_epoch <= 1443301888.00
+|   |   |   |   |   |--- class: 0
+|   |   |   |   |--- launched_epoch >  1443301888.00
+|   |   |   |   |   |--- class: 0
+|   |--- usd_goal_real >  48487.50
+|   |   |--- launched_epoch <= 1504158016.00
+|   |   |   |--- launched_epoch <= 1408134656.00
+|   |   |   |   |--- launched_epoch <= 1337698880.00
+|   |   |   |   |   |--- class: 0
+|   |   |   |   |--- launched_epoch >  1337698880.00
+|   |   |   |   |   |--- class: 0
+|   |   |   |--- launched_epoch >  1408134656.00
+|   |   |   |   |--- title_length <= 30.50
+|   |   |   |   |   |--- class: 0
+|   |   |   |   |--- title_length >  30.50
+|   |   |   |   |   |--- class: 0
+|   |   |--- launched_epoch >  1504158016.00
+|   |   |   |--- goal <= 53000.00
+|   |   |   |   |--- class: 0
+|   |   |   |--- goal >  53000.00
+|   |   |   |   |--- usd_goal_real <= 123018.59
+|   |   |   |   |   |--- class: 1
+|   |   |   |   |--- usd_goal_real >  123018.59
+|   |   |   |   |   |--- class: 0
+
+The Accuracy is 0.6111111111111112
