@@ -9,6 +9,7 @@ from sklearn import tree
 from csv import reader
 from math import log
 from typing import List, Tuple
+import sys
 
 ### Define functions to use later
 ## Calculate the cross-entropy of predictions and true labels.
@@ -71,9 +72,9 @@ def get_data(filename:str) -> Tuple[List,List[int]]:
 ## Store the decision tree graphically for later reference.
 # assumes tree has already been exported to string using
 # t = tree.export_text(clf,feature_names=header[0:len(header)-1])
-def write_tree_to_file(tree:str, acc:float):
+def write_tree_to_file(tree:str, acc:float, fname:str=""):
     # w=write, a=append
-    file1=open("trees/optimal_dt.txt","w")
+    file1=open("trees/optimal_dt_"+fname+".txt","w")
     file1.write(tree + "\nThe Accuracy is " + str(acc) + "\n")
     file1.close()
     print(tree)
@@ -81,9 +82,12 @@ def write_tree_to_file(tree:str, acc:float):
 
 
 # main ------
-X_train, Y_train = get_data("ks_train_seg_cat")
-X_val, Y_val = get_data("ks_validate_seg_cat")
-X_test, Y_test = get_data("ks_test_seg_cat")
+# we should be getting the filename as an argument with the function call
+print("Expecting argument in format full_cat, seg_cat, full, or seg.")
+fname = str(sys.argv[1])
+X_train, Y_train = get_data("ks_train_" + fname)
+X_val, Y_val = get_data("ks_validate_" + fname)
+X_test, Y_test = get_data("ks_test_" + fname)
 
 # define the classifier w/ our training data
 clf = tree.DecisionTreeClassifier(criterion="gini", max_depth=5)
@@ -111,4 +115,4 @@ Y_pred = clf.predict_proba(X_test)
 # calculate the accuracy
 acc = accuracy(Y_test, Y_pred)
 # write the tree + acc to a file, & print to console
-write_tree_to_file(t, acc)
+write_tree_to_file(t, acc, fname)

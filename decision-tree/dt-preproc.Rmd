@@ -1,7 +1,7 @@
 ---
 title: "SL Project: Pre-Processing for Decision Trees"
 author: "Kevin Robb"
-date: "11/25/2020"
+date: "12/07/2020"
 output: html_document
 ---
 
@@ -24,8 +24,8 @@ names(df_orig)
 
 ```{r}
 #df = df_orig[c(1:100),]
-df = df_orig[c(1:5000),] # segmented dataset
-#df = df_orig # use this line to run on the full dataset
+#df = df_orig[c(1:5000),] # segmented dataset
+df = df_orig # use this line to run on the full dataset
 head(df)
 ```
 
@@ -155,9 +155,9 @@ head(df)
 
 ### Work on the categories
 
-Initially, remove them entirely.
+Initially, we removed them entirely.
 
-Better, try using one-hot encoding for the main categories.
+Better, include main_category using one-hot encoding.
 
 ```{r}
 df_cats <- df
@@ -238,9 +238,9 @@ We now have our dataframe split into df_test, df_train, and df_validate.
 
 # Output our pre-processed data to CSV files
 
-```{r eval=FALSE}
+```{r eval=TRUE}
 # format the filename to represent conditions
-segmented = TRUE
+segmented = FALSE
 with_cats = TRUE
 suffix = ""
 if (segmented) {

@@ -73,12 +73,12 @@
 |   |   |   |   |--- title_length >  30.50
 |   |   |   |   |   |--- class: 0
 |   |   |--- launched_epoch >  1504158016.00
-|   |   |   |--- goal <= 53000.00
-|   |   |   |   |--- class: 0
-|   |   |   |--- goal >  53000.00
-|   |   |   |   |--- usd_goal_real <= 123018.59
+|   |   |   |--- launched_epoch <= 1510269760.00
+|   |   |   |   |--- open_epoch <= 4346756.00
 |   |   |   |   |   |--- class: 1
-|   |   |   |   |--- usd_goal_real >  123018.59
+|   |   |   |   |--- open_epoch >  4346756.00
 |   |   |   |   |   |--- class: 0
+|   |   |   |--- launched_epoch >  1510269760.00
+|   |   |   |   |--- class: 0
 
 The Accuracy is 0.6111111111111112

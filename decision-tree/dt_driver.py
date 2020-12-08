@@ -5,6 +5,7 @@ from decision_tree import DecisionTree
 from csv import reader
 from typing import List, Tuple
 from datetime import datetime
+import sys
 
 def accuracy(y, p):
     # Calculate the accuracy given the true labels and probabilistic predictions.
@@ -48,9 +49,9 @@ def get_filename(suffix:str):
 
 def init_dt_data(fname_suffix:str=""):
     # make it less annoying to change which set of files we are using.
-    df_train = get_data("ks_train"+fname_suffix)
-    df_val = get_data("ks_validate"+fname_suffix)
-    df_test = get_data("ks_test"+fname_suffix)
+    df_train = get_data("ks_train_"+fname_suffix)
+    df_val = get_data("ks_validate_"+fname_suffix)
+    df_test = get_data("ks_test_"+fname_suffix)
     return df_train, df_val, df_test
 
 def get_labels(df:List) -> List[int]:
@@ -61,11 +62,10 @@ def get_labels(df:List) -> List[int]:
     return lab
 
 ## main -------
+# specify necessary arguments passed from command line
+print("Expecting suffix argument in format full_cat, seg_cat, full, or seg.")
+suffix = str(sys.argv[1])
 # set tree name and get data
-run_seg = True
-run_cats = True
-suffix = "" + "seg_" if run_seg else "full_"
-suffix += "cat_" if run_cats else ""
 df_train, df_val, df_test = init_dt_data(suffix)
 
 # initialize the tree with the training data.
