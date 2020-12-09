@@ -1,0 +1,15 @@
+This simplified tree shows only the paths to a classification of 1 (success).
+
+usd_goal_real <= 15002.38
+--- goal <= 4726.50
+--- --- launched_epoch <= 1399331776
+--- --- --- open_epoch <= 2498396
+--- --- --- --- Fashion == 0
+--- --- --- open_epoch >  2498396
+--- --- --- --- Publishing == 0
+--- --- launched_epoch >  1440044224
+--- --- --- open_epoch <= 2499460.50
+--- goal >  4726.50
+--- --- title_punc >= 1
+--- --- --- Music == 1
+--- --- --- --- open_epoch <= 4439779
