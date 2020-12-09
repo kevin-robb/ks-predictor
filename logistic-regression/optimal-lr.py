@@ -1,26 +1,16 @@
 # This program will execute the optimal comparison, scikit-learn's 
-# implementation of the decision tree, on our same datasets.
-# This will give us an idea about which variables are probably most 
-# important, and what kind of accuracy might be possible.
-
-# As a side note, I am referencing my code for homework 4.
+# implementation of logistic regression, on our same datasets.
+# This will give us an idea about what kind of accuracy might be possible.
 
 from sklearn.linear_model import LogisticRegression as lr
 from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import accuracy_score
 from csv import reader
-from math import log
 from typing import List, Tuple
 import numpy as np
 
-
 ## Read in and store the data
-## Characterisitics of our dataframe, df
-# - row 0 is the header
 header = None
-# - column 0 is a useless index
-# - columns 1-9 are data
-# - final column (10) is the target
 def get_data(filename:str) -> Tuple[List,List[int]]:
     global header
     filepath = "logistic-regression/data/" + filename + ".csv"
