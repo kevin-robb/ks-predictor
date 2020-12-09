@@ -1,7 +1,6 @@
 from typing import List, Tuple
 # define node class to make tree structure simpler
 class Node:
-    node_id=None #unique id to make debugging easier
     data = None
     c1, c2 = None, None
     depth = None
@@ -10,8 +9,7 @@ class Node:
     decision = None
     purity = None
 
-    def __init__(self, node_id:int=-1, data:List=None, depth:int=1, c1:'Node'=None, c2:'Node'=None, split_var:int=None, split_thresh:float=None, decision:int=None):
-        self.node_id=node_id
+    def __init__(self, data:List=None, depth:int=1, c1:'Node'=None, c2:'Node'=None, split_var:int=None, split_thresh:float=None, decision:int=None):
         self.data = data
         self.c1 = c1
         self.c2 = c2
@@ -82,14 +80,8 @@ class Node:
             return self.decision
         else:
             # evaluate the example row and check the relevant child node.
-            # check the type
-            if self.var_type == 1: #numeric
-                if example[self.split_var] <= self.split_thresh:
-                    return self.c1.get_decision(example)
-                else:
-                    return self.c2.get_decision(example)
-            else: #boolean
-                if float(example[self.split_var]) == self.split_thresh:
-                    return self.c1.get_decision(example)
-                else:
-                    return self.c2.get_decision(example)
+            # this works for bool b/c split_thresh=0.5.
+            if example[self.split_var] <= self.split_thresh:
+                return self.c1.get_decision(example)
+            else:
+                return self.c2.get_decision(example)

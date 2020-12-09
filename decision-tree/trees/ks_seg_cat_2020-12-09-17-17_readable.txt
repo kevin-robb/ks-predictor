@@ -1,0 +1,23 @@
+|Node: open_epoch <= 2194218.0
+|-Node: Technology == 0
+|--Node: launched_epoch <= 1510338024.0
+|---Node: title_caps_ratio <= 0.0555555555555556
+|----Node: decision=0
+|----Node: decision=1
+|---Node: decision=0
+|--Node: decision=0
+|-Node: title_punc <= 0.0
+|--Node: launched_epoch <= 1402115088.0
+|---Node: Publishing == 0
+|----Node: decision=0
+|----Node: decision=0
+|---Node: title_caps_ratio <= 0.0606060606060606
+|----Node: decision=0
+|----Node: decision=0
+|--Node: Music == 0
+|---Node: Comics == 0
+|----Node: decision=0
+|----Node: decision=1
+|---Node: title_caps_ratio <= 0.117647058823529
+|----Node: decision=0
+|----Node: decision=1

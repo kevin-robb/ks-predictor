@@ -9,7 +9,7 @@ from typing import List, Tuple
 class NodeStorage:
     # root node of tree
     root = None
-    # array to store the tree data [var_index,var_thresh,decision]
+    # array to store the tree data [depth,var_index,var_thresh,decision]
     arr = None
     # filename being written to
     filename = None
@@ -41,7 +41,7 @@ class NodeStorage:
         # traverse tree inorder and store each node in the right place.
         if node is None:
             return
-        self.arr[pos] = [node.node_id,node.depth,node.split_var, node.split_thresh, node.decision]
+        self.arr[pos] = [node.depth,node.split_var, node.split_thresh, node.decision]
         if node.c1 is not None:
             self.populate_arr(node.c1, pos=2*pos+1)
         if node.c2 is not None:
@@ -62,14 +62,14 @@ class NodeStorage:
         # set left subtree of parent
         new_pos = 2*pos+1
         if new_pos < n and self.arr[new_pos] is not None:
-            node.c1 = Node(node_id=self.arr[new_pos][0],depth=self.arr[new_pos][1],split_var=self.arr[new_pos][2], split_thresh=self.arr[new_pos][3], decision=self.arr[new_pos][4])
+            node.c1 = Node(depth=self.arr[new_pos][0],split_var=self.arr[new_pos][1], split_thresh=self.arr[new_pos][2], decision=self.arr[new_pos][3])
             if not node.c1.is_terminal:
                 node.c1.set_var_type(self.var_types[node.c1.split_var])
             self.populate_tree(node.c1, n, new_pos)
         # set the right subtree of parent
         new_pos = 2*pos+2
         if new_pos < n and self.arr[new_pos] is not None:
-            node.c2 = Node(node_id=self.arr[new_pos][0],depth=self.arr[new_pos][1],split_var=self.arr[new_pos][2], split_thresh=self.arr[new_pos][3], decision=self.arr[new_pos][4])
+            node.c2 = Node(depth=self.arr[new_pos][0],split_var=self.arr[new_pos][1], split_thresh=self.arr[new_pos][2], decision=self.arr[new_pos][3])
             if not node.c2.is_terminal:
                 node.c2.set_var_type(self.var_types[node.c2.split_var])
             self.populate_tree(node.c2, n, new_pos)
@@ -80,7 +80,7 @@ class NodeStorage:
             print("arr does not contain a valid tree")
             return None
         # populate the root node (arr[0]) recursively and return it
-        self.root = Node(node_id=self.arr[0][0],depth=self.arr[0][1],split_var=self.arr[0][2], split_thresh=self.arr[0][3], decision=self.arr[0][4])
+        self.root = Node(depth=self.arr[0][0],split_var=self.arr[0][1], split_thresh=self.arr[0][2], decision=self.arr[0][3])
         self.root.set_var_type(self.var_types[self.root.split_var])
         self.populate_tree(self.root, n=len(self.arr), pos=0)
         return self.root
@@ -134,12 +134,12 @@ class NodeStorage:
         spacing = "|" + "-" * (node.depth - 1)
         # use the header to put var names and values
         if node.is_terminal:
-            return spacing+"Node "+str(node.node_id)+": decision="+str(node.decision)
+            return spacing+"Node: decision="+str(node.decision)
         else:
             if node.var_type == 1: #numeric, use <=
-                return spacing+"Node "+str(node.node_id)+": "+self.header[node.split_var]+" <= "+str(node.split_thresh)
+                return spacing+"Node: "+self.header[node.split_var]+" <= "+str(node.split_thresh)
             else: #boolean, use ==
-                return spacing+"Node "+str(node.node_id)+": "+self.header[node.split_var]+" == "+str(node.split_thresh)
+                return spacing+"Node: "+self.header[node.split_var]+" == 0"
 
     def print_arr(self):
         # helper function to print arr.
@@ -148,10 +148,10 @@ class NodeStorage:
 
     ## File I/O
     def tree_to_file(self, root_node:Node=None, filename:str=None):
-        # store the tree to a file in a recoverable format
+        # store the tree to a file in a recoverable format.
         if filename is None:
             filename = self.filename
-        # use the true root node if one is not provided
+        # use the true root node if one is not provided.
         if root_node is None:
             root_node = self.root
         self.tree_to_arr(root_node)
@@ -165,17 +165,15 @@ class NodeStorage:
         for i in range(len(self.arr)):
             # we will have a None row for missing nodes that needs to be accounted for.
             if self.arr[i] is None:
-                # mark the row as empty in the file (using ID = -2).
-                file1.write("-2,-1,-1,0,-1")
+                # mark the row as empty in the file using ID = -2.
+                file1.write("-2,None,None,None,None")
             else:
-                # store the node's id, depth, var, thresh, & decision.
-                # terminal nodes will be int,int,None,None,int.
-                # other nodes will be int,int,int,float,None.
-                row = ""
-                for j in range(5):
-                    if j != 0:
-                        row += ","
-                    row += str(self.arr[i][j])
+                # store the node's id (1), depth, var, thresh, & decision.
+                # terminal nodes will be 1,int,None,None,int.
+                # other nodes will be 1,int,int,float,None.
+                row = "1"
+                for j in range(4):
+                    row += "," + str(self.arr[i][j])
                 file1.write(row)
             file1.write("\n")
         file1.close()
@@ -191,18 +189,18 @@ class NodeStorage:
         # initialize array to store data from file.
         self.arr = [None for i in range(len(file_content))]
         # go through and parse each line as a row in arr.
-            # -2,-1,-1,0,-1: no node.
-            # int,int,None,None,int: terminal nodes.
-            # int,int,int,float,None: other nodes.
+            # -2,None,None,None: no node.
+            # 1,int,None,None,int: terminal nodes.
+            # 1,int,int,float,None: other nodes.
         # make sure to skip None rows (denoted "-" in file).
         for i in range(len(file_content)):
             row_str = file_content[i].split(",")
             if int(row_str[0]) == -2: # no node. leave as None.
                 continue
             elif row_str[2] == "None": # terminal node.
-                self.arr[i] = [int(row_str[0]),int(row_str[1]),None,None,int(row_str[4])]
+                self.arr[i] = [int(row_str[1]),None,None,int(row_str[4])]
             else: # non-terminal node.
-                self.arr[i] = [int(row_str[0]),int(row_str[1]),int(row_str[2]),float(row_str[3]), None]
+                self.arr[i] = [int(row_str[1]),int(row_str[2]),float(row_str[3]), None]
         # convert arr to tree and return
         self.root = self.arr_to_tree()
         return self.root
@@ -226,6 +224,7 @@ class NodeStorage:
         for l in tree:
             file1.write(l + "\n")
         # write the accuracy at the end
-        file1.write("\nThe Accuracy is " + str(acc))
+        if acc != -1:
+            file1.write("\nThe Accuracy is " + str(acc))
         file1.close()
 
