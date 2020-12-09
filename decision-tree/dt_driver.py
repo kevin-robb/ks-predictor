@@ -14,13 +14,13 @@ df_train, df_val, df_test = dt_util.init_dt_data(suffix)
 
 # initialize the tree with the training data.
 # now that we have finalized the tree, train with both training & validation data
-tree = DecisionTree(data=df_train+df_val, max_depth=5, min_node_size=50)
+tree = DecisionTree(data=df_train+df_val, max_depth=5, min_node_size=50, var_types=dt_util.var_types)
 print("tree initialization finished")
 root_node = tree.split(node=tree.root_node)
 print("tree split finished")
 
 # display and store the tree
-dtns = NodeStorage(root_node=root_node, fname=dt_util.get_filename(suffix), header=dt_util.header)
+dtns = NodeStorage(root_node=root_node, fname=dt_util.get_filename(suffix), header=dt_util.get_header(), var_types=dt_util.var_types)
 print("dtns initialization finished")
 print("\nPrinting tree preorder")
 dtns.print_tree_preorder(node=root_node)

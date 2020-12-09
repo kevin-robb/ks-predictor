@@ -9,10 +9,10 @@ def write_file(suffix:str,recoverable:bool=True):
     # set tree name and get data
     df_train, df_val, df_test = dt_util.init_dt_data(suffix)
     # make the tree
-    tree = DecisionTree(data=df_train+df_val, max_depth=5, min_node_size=50)
+    tree = DecisionTree(data=df_train+df_val, max_depth=5, min_node_size=50, var_types=dt_util.var_types)
     root_node = tree.split(node=tree.root_node)
     # display tree to console
-    dtns = NodeStorage(root_node=root_node, fname=dt_util.get_filename(suffix), header=dt_util.header)
+    dtns = NodeStorage(root_node=root_node, fname=dt_util.get_filename(suffix), header=dt_util.header, var_types=dt_util.var_types)
     dtns.print_tree_preorder(node=root_node)
     if recoverable:
         # write tree to file (recoverable)
@@ -26,7 +26,7 @@ def write_file(suffix:str,recoverable:bool=True):
 
 def read_file(fname:str) -> Node:
     # read recoverable file and return the root node
-    dtns = NodeStorage(fname=fname,header=dt_util.get_header())
+    dtns = NodeStorage(fname=fname,header=dt_util.get_header(), var_types=dt_util.var_types)
     root_node = dtns.file_to_tree()
     # print tree to console to see if it worked
     dtns.print_tree_preorder(root_node)

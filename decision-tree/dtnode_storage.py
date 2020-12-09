@@ -15,12 +15,14 @@ class NodeStorage:
     filename = None
     # list of variable names
     header = None
+    var_types=None
 
-    def __init__(self, root_node:Node=None, fname:str=None, header:List=None):
+    def __init__(self, root_node:Node=None, fname:str=None, header:List=None, var_types:List[int]=None):
         self.root = root_node
         self.arr = []
         self.filename = fname
         self.header = header
+        self.var_types = var_types
     
     def max_nodes(self, root_node:Node) -> int:
         # find the max number of nodes in this tree.
@@ -61,11 +63,15 @@ class NodeStorage:
         new_pos = 2*pos+1
         if new_pos < n and self.arr[new_pos] is not None:
             node.c1 = Node(node_id=self.arr[new_pos][0],depth=self.arr[new_pos][1],split_var=self.arr[new_pos][2], split_thresh=self.arr[new_pos][3], decision=self.arr[new_pos][4])
+            if not node.c1.is_terminal:
+                node.c1.set_var_type(self.var_types[node.c1.split_var])
             self.populate_tree(node.c1, n, new_pos)
         # set the right subtree of parent
         new_pos = 2*pos+2
         if new_pos < n and self.arr[new_pos] is not None:
             node.c2 = Node(node_id=self.arr[new_pos][0],depth=self.arr[new_pos][1],split_var=self.arr[new_pos][2], split_thresh=self.arr[new_pos][3], decision=self.arr[new_pos][4])
+            if not node.c2.is_terminal:
+                node.c2.set_var_type(self.var_types[node.c2.split_var])
             self.populate_tree(node.c2, n, new_pos)
 
     def arr_to_tree(self) -> Node:
@@ -75,6 +81,7 @@ class NodeStorage:
             return None
         # populate the root node (arr[0]) recursively and return it
         self.root = Node(node_id=self.arr[0][0],depth=self.arr[0][1],split_var=self.arr[0][2], split_thresh=self.arr[0][3], decision=self.arr[0][4])
+        self.root.set_var_type(self.var_types[self.root.split_var])
         self.populate_tree(self.root, n=len(self.arr), pos=0)
         return self.root
 

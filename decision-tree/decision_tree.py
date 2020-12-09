@@ -18,10 +18,9 @@ class DecisionTree:
     allowed_vars = None
     # keep track of types of variables to speed up for booleans.
     # 1=numeric, 2=bool 0 or 1)
-    var_types = [1,1,1,1,1,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2]
-    #"goal","usd_goal_real","title_length","title_punc","title_caps_ratio","currency_is_usd","country_is_us","launched_epoch","open_epoch","Art","Comics","Crafts","Dance","Design","Fashion","Film & Video","Food","Games","Journalism","Music","Photography","Publishing","Technology","Theater","target"
+    var_types = None
 
-    def __init__(self, data:List, max_depth:int, min_node_size:int):
+    def __init__(self, data:List, max_depth:int, min_node_size:int, var_types:List[int]):
         self.root_node = Node(node_id=0,data=data)
         self.cur_node_id = 1
         self.allowed_vars = [*range(len(data[0])-1)]
@@ -29,6 +28,7 @@ class DecisionTree:
         print(self.allowed_vars)
         self.max_depth = max_depth
         self.min_node_size = min_node_size
+        self.var_types = var_types
 
     # we will be using gini index for the cost function.
     def get_gini(self, partition:List[Node]) -> float:

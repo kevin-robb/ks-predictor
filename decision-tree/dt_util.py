@@ -62,3 +62,6 @@ def get_header():
     if header is None:
         header = ["goal","usd_goal_real","title_length","title_punc","title_caps_ratio","currency_is_usd","country_is_us","launched_epoch","open_epoch","Art","Comics","Crafts","Dance","Design","Fashion","Film & Video","Food","Games","Journalism","Music","Photography","Publishing","Technology","Theater","target"]
     return header
+
+# Variable types, corresponding to header var_indexes. 1=numeric, 2=boolean
+var_types = [1,1,1,1,1,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2]

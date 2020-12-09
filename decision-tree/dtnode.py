@@ -70,6 +70,11 @@ class Node:
             self.decision = 1
         else:
             self.decision = 0
+    
+    def set_var_type(self, var_type:int):
+        if var_type not in [1,2]:
+            print("Set unexpected var_type",var_type)
+        self.var_type = var_type
 
     def get_decision(self, example:List[float]) -> int:
         # given one row, follow the tree to a decision recursively
