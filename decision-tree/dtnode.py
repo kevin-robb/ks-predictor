@@ -10,7 +10,7 @@ class Node:
     decision = None
     purity = None
 
-    def __init__(self, node_id:int=-1, data:List=None, depth:int=1, c1:'Node'=None, c2:'Node'=None, split_var:int=None, split_thresh:float=None):
+    def __init__(self, node_id:int=-1, data:List=None, depth:int=1, c1:'Node'=None, c2:'Node'=None, split_var:int=None, split_thresh:float=None, decision:int=None):
         self.node_id=node_id
         self.data = data
         self.c1 = c1
@@ -18,11 +18,14 @@ class Node:
         self.depth = depth
         self.split_var = split_var
         self.split_thresh = split_thresh
+        self.decision = decision
+        if decision is not None:
+            self.is_terminal = True
         # check the size and set terminal if too small
         # if len(self.data) < self.min_node_size:
         #     self.set_terminal()
         # compute the purity
-        self.purity = self.compute_purity()
+        #self.purity = self.compute_purity()
 
     def compute_purity(self):
         if len(self.data) <= 1:

@@ -9,7 +9,7 @@ from typing import List, Tuple
 class NodeStorage:
     # root node of tree
     root = None
-    # array to store the tree data
+    # array to store the tree data [var_index,var_thresh,decision]
     arr = None
     # filename being written to
     filename = None
@@ -39,7 +39,7 @@ class NodeStorage:
         # traverse tree inorder and store each node in the right place.
         if node is None:
             return
-        self.arr[pos] = [node.split_var, node.split_thresh]
+        self.arr[pos] = [node.split_var, node.split_thresh, node.decision]
         if node.c1 is not None:
             self.populate_arr(node.c1, pos=2*pos+1)
         if node.c2 is not None:
@@ -60,12 +60,12 @@ class NodeStorage:
         # set left subtree of parent
         new_pos = 2*pos+1
         if new_pos < n and self.arr[new_pos] is not None:
-            node.c1 = Node(split_var=self.arr[new_pos][0], split_thresh=self.arr[new_pos][1])
+            node.c1 = Node(split_var=self.arr[new_pos][0], split_thresh=self.arr[new_pos][1], decision=self.arr[new_pos][2])
             self.populate_tree(node.c1, n, new_pos)
         # set the right subtree of parent
         new_pos = 2*pos+2
         if new_pos < n and self.arr[new_pos] is not None:
-            node.c2 = Node(split_var=self.arr[new_pos][0], split_thresh=self.arr[new_pos][1])
+            node.c2 = Node(split_var=self.arr[new_pos][0], split_thresh=self.arr[new_pos][1], decision=self.arr[new_pos][2])
             self.populate_tree(node.c2, n, new_pos)
 
     def arr_to_tree(self) -> Node:
@@ -74,7 +74,7 @@ class NodeStorage:
             print("arr does not contain a valid tree")
             return None
         # populate the root node (arr[0]) recursively and return it
-        self.root = Node(split_var=self.arr[0][0], split_thresh=self.arr[0][1])
+        self.root = Node(split_var=self.arr[0][0], split_thresh=self.arr[0][1], decision=self.arr[0][2])
         self.populate_tree(self.root, n=len(self.arr), pos=0)
         return self.root
 
@@ -149,17 +149,22 @@ class NodeStorage:
             root_node = self.root
         self.tree_to_arr(root_node)
         # clear the file first (w=write mode).
-        file1=open("trees/" + filename + ".txt","w")
+        file1=open("tree_storage/" + filename + ".txt","w")
         file1.write("")
         file1.close()
         # don't overwrite with each statement (a=append).
-        file1=open("trees/" + filename + ".txt","a")
+        file1=open("tree_storage/" + filename + ".txt","a")
         # make sure everything goes out as a string.
         for i in range(len(self.arr)):
-            for j in range(len(self.arr[0])):
-                if j != 0:
-                    file1.write(" ")
-                file1.write(str(self.arr[i][j]))
+            # we will have a None row for missing nodes that needs to be accounted for.
+            if self.arr[i] is None:
+                # mark the row as empty in the file (using -1 index).
+                file1.write("-1,0,-1")
+            else:
+                # store the node's var, thresh, & decision.
+                # terminal nodes will be None,None,int.
+                # other nodes will be int,float,None.
+                file1.write(str(self.arr[i][0])+","+str(self.arr[i][1])+","+str(self.arr[i][2]))
             file1.write("\n")
         file1.close()
 
@@ -168,25 +173,24 @@ class NodeStorage:
         if filename is None:
             filename = self.filename
         # open file in read mode.
-        file1=open("trees/" + filename + ".txt", "r+")
+        file1=open("tree_storage/" + filename + ".txt", "r+")
         # read each line & return as each a string element in a list.
         file_content = file1.readlines()
         # initialize array to store data from file.
         self.arr = [None for i in range(len(file_content))]
         # go through and parse each line as a row in arr.
-        # make sure everything comes in as a float.
-        # make sure to skip None rows.
+            # -1,0,-1: no node.
+            # None,None,int: terminal nodes.
+            # int,float,None: other nodes.
+        # make sure to skip None rows (denoted "-" in file).
         for i in range(len(file_content)):
-            if file_content[i] is None or file_content[i] == "None":
+            row_str = file_content[i].split(",")
+            if row_str[0] == "None": # terminal node.
+                self.arr[i] = [None,None,int(row_str[2])]
+            elif int(row_str[0]) == -1: # no node. leave None.
                 continue
-            row_str = file_content[i].split(" ")
-            row = [None for l in range(len(row_str))]
-            # get the var index first, since it's an int
-            row[0] = int(row_str[0])
-            # get the rest of it. should just be one float, the var thresh
-            for j in range(1,len(row)):
-                row[j] = float(row_str[j])
-            self.arr[i] = row
+            else: # non-terminal node.
+                self.arr[i] = [int(row_str[0]), float(row_str[1]), None]
         # convert arr to tree and return
         self.root = self.arr_to_tree()
         return self.root

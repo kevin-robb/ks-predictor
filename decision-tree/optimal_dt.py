@@ -83,7 +83,7 @@ def write_tree_to_file(tree:str, acc:float, fname:str=""):
 
 # main ------
 # we should be getting the filename as an argument with the function call
-print("Expecting argument in format full_cat, seg_cat, full, or seg.")
+print("Expecting suffix argument: full_cat, seg_cat, full, or seg.")
 fname = str(sys.argv[1])
 X_train, Y_train = get_data("ks_train_" + fname)
 X_val, Y_val = get_data("ks_validate_" + fname)

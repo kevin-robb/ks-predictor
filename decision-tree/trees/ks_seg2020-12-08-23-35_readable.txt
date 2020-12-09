@@ -1,0 +1,25 @@
+|Node 0: open_epoch <= 2194218
+|-Node 44039: title_caps_ratio <= 0.0555555555555556
+|--Node 52833: decision=0
+|--Node 52834: launched_epoch <= 1509669770
+|---Node 57683: title_punc <= 0
+|----Node 60541: decision=1
+|----Node 60542: decision=1
+|---Node 57684: decision=0
+|-Node 44040: title_punc <= 0
+|--Node 80009: launched_epoch <= 1402115088
+|---Node 109059: title_length <= 71
+|----Node 113787: decision=0
+|----Node 113788: decision=1
+|---Node 109060: title_caps_ratio <= 0.0606060606060606
+|----Node 120585: decision=0
+|----Node 120586: decision=0
+|--Node 80010: title_caps_ratio <= 0.111111111111111
+|---Node 132699: launched_epoch <= 1271986072
+|----Node 143037: decision=1
+|----Node 143038: decision=0
+|---Node 132700: usd_goal_real <= 1000
+|----Node 146603: decision=1
+|----Node 146604: decision=0
+
+The Accuracy is 0.5884353741496599
