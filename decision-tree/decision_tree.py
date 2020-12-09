@@ -11,8 +11,6 @@ class DecisionTree:
     root_node = None
     # parameters for stopping split recursion
     max_depth, min_node_size = None, None
-    # make unique ID for all nodes. just for readability.
-    cur_node_id = None
     # don't let a variable be used more than once for a decision.
     # list of ints (indices of variables).
     allowed_vars = None
@@ -20,15 +18,23 @@ class DecisionTree:
     # 1=numeric, 2=bool 0 or 1)
     var_types = None
 
-    def __init__(self, data:List, max_depth:int, min_node_size:int, var_types:List[int]):
-        self.root_node = Node(node_id=0,data=data)
-        self.cur_node_id = 1
-        self.allowed_vars = [*range(len(data[0])-1)]
-        # TODO to not consider the categories, make this [*range(len(data[0])-16)]
-        print(self.allowed_vars)
-        self.max_depth = max_depth
-        self.min_node_size = min_node_size
-        self.var_types = var_types
+    def __init__(self, root_node:Node=None, data:List=None, max_depth:int=None, min_node_size:int=None, var_types:List[int]=None):
+        # check why we're making the tree object
+        if root_node is not None:
+        # initialize a tree object with an already filled out root node to use predict()
+            self.root_node = root_node
+        elif data is not None and max_depth is not None and min_node_size is not None and var_types is not None:
+            # initialize tree to create it in the first place
+            self.root_node = Node(data=data)
+            self.cur_node_id = 1
+            self.allowed_vars = [*range(len(data[0])-1)]
+            # TODO to not consider the categories, make this [*range(len(data[0])-16)]
+            print(self.allowed_vars)
+            self.max_depth = max_depth
+            self.min_node_size = min_node_size
+            self.var_types = var_types
+        else:
+            print("Missing required params to init DecisionTree.")
 
     # we will be using gini index for the cost function.
     def get_gini(self, partition:List[Node]) -> float:
@@ -61,23 +67,15 @@ class DecisionTree:
     # split the dataset and compare gini values of all splits.
     def split_group(self, parent:Node, var_to_split:int, threshold:float) -> Tuple[Node, Node]:
         #print("split_group called")
-        # define child groups
-        c1 = Node(node_id=self.cur_node_id,data=[],depth=parent.depth+1)
-        c2 = Node(node_id=self.cur_node_id+1,data=[],depth=parent.depth+1)
-        self.cur_node_id += 2
-        # check variable type
-        if self.var_types[var_to_split] == 1: # numeric
-            for row in parent.data:
-                if row[var_to_split] <= threshold:
-                    c1.data.append(row)
-                else:
-                    c2.data.append(row)
-        else: # boolean
-            for row in parent.data:
-                if int(row[var_to_split]) == threshold:
-                    c1.data.append(row)
-                else:
-                    c2.data.append(row)
+        # define children
+        c1 = Node(data=[],depth=parent.depth+1)
+        c2 = Node(data=[],depth=parent.depth+1)
+        # assign data to the children accordingly
+        for row in parent.data:
+            if row[var_to_split] <= threshold:
+                c1.data.append(row)
+            else:
+                c2.data.append(row)
         return c1, c2
         
     # check the gini of all possible splits to find the best one
@@ -96,30 +94,30 @@ class DecisionTree:
                     c1, c2 = self.split_group(parent, var_index, row[var_index])
                     # evaluate this split
                     gini = self.get_gini(partition=[c1,c2])
-                    #print("Checked kids " + str(len(c1.data)) + "," + str(len(c2.data)) + " and got Gini " + str(gini))
                     # if this is the new best, update our info
                     if gini < best_gini:
                         print("found new best gini,"+ str(gini) +", with var " + str(var_index))
                         best_gini = gini
                         split_var, split_thresh = var_index, row[var_index]
+                        del children[0:1]
                         children = [c1, c2]
                     else: # free up space
                         del c1, c2
-            else: # self.var_types[var_index] == 2: #boolean, either 0 or 1
-                for thresh in [0,1]:
-                    # make a split
-                    c1, c2 = self.split_group(parent, var_index, thresh)
-                    # evaluate this split
-                    gini = self.get_gini(partition=[c1,c2])
-                    #print("Checked kids " + str(len(c1.data)) + "," + str(len(c2.data)) + " and got Gini " + str(gini))
-                    # if this is the new best, update our info
-                    if gini < best_gini:
-                        print("found new best gini,"+ str(gini) +", with var " + str(var_index))
-                        best_gini = gini
-                        split_var, split_thresh = var_index, thresh
-                        children = [c1, c2]
-                    else: # free up space
-                        del c1, c2
+            else: # self.var_types[var_index] == 2: #boolean
+                # there is only one split possible, so just do it and get the gini.
+                # split data into var == 0 and var == 1.
+                c1, c2 = self.split_group(parent, var_index, 0.5)
+                # get the gini
+                gini = self.get_gini(partition=[c1,c2])
+                # if this is the new best, update our info
+                if gini < best_gini:
+                    print("found new best gini,"+ str(gini) +", with var " + str(var_index))
+                    best_gini = gini
+                    split_var, split_thresh = var_index, 0.5
+                    del children[0:1]
+                    children = [c1, c2]
+                else: # free up space
+                    del c1, c2
         # now that we know the best split, do it!
         parent.set_thresh(var=split_var,thresh=split_thresh,var_type=self.var_types[split_var])
         parent.set_children(children[0], children[1])
