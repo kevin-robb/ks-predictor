@@ -66,13 +66,13 @@ class DecisionTree:
 
     # split the dataset and compare gini values of all splits.
     def split_group(self, parent:Node, var_to_split:int, threshold:float) -> Tuple[Node, Node]:
-        #print("split_group called")
+        #print("split_group called with " + str(var_to_split) + " <= " + str(threshold))
         # define children
         c1 = Node(data=[],depth=parent.depth+1)
         c2 = Node(data=[],depth=parent.depth+1)
         # assign data to the children accordingly
         for row in parent.data:
-            if row[var_to_split] <= threshold:
+            if float(row[var_to_split]) <= threshold:
                 c1.data.append(row)
             else:
                 c2.data.append(row)
@@ -91,7 +91,7 @@ class DecisionTree:
             if self.var_types[var_index] == 1: #numeric
                 for row in parent.data:
                     # make a split
-                    c1, c2 = self.split_group(parent, var_index, row[var_index])
+                    c1, c2 = self.split_group(parent, int(var_index), float(row[var_index]))
                     # evaluate this split
                     gini = self.get_gini(partition=[c1,c2])
                     # if this is the new best, update our info

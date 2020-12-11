@@ -81,7 +81,7 @@ class Node:
         else:
             # evaluate the example row and check the relevant child node.
             # this works for bool b/c split_thresh=0.5.
-            if example[self.split_var] <= self.split_thresh:
+            if float(example[self.split_var]) <= self.split_thresh:
                 return self.c1.get_decision(example)
             else:
                 return self.c2.get_decision(example)
