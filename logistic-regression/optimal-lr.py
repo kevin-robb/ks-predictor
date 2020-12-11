@@ -13,7 +13,7 @@ import numpy as np
 header = None
 def get_data(filename:str) -> Tuple[List,List[int]]:
     global header
-    filepath = "logistic-regression/data/" + filename + ".csv"
+    filepath = "decision-tree/data/" + filename + ".csv"
     with open(filepath, 'r') as read_obj:
         # pass the file object to reader() to get a reader object, and
         # pass the reader object to list() to get a list of lists.
@@ -37,9 +37,13 @@ def get_data(filename:str) -> Tuple[List,List[int]]:
     return np.array(X).astype(np.float64), np.array(Y).astype(np.float64)
 
 # main ------
-X_train, Y_train = get_data("ks_train")
-X_val, Y_val = get_data("ks_validate")
-X_test, Y_test = get_data("ks_test")
+X_train, Y_train = get_data("ks_train_full_cat")
+X_val, Y_val = get_data("ks_validate_full_cat")
+X_test, Y_test = get_data("ks_test_full_cat")
+
+#X_train, Y_train = get_data("ks_train_full")
+#X_val, Y_val = get_data("ks_validate_full")
+#X_test, Y_test = get_data("ks_test_full")
 
 # define the classifier w/ our training data
 # do a grid search to find best model
@@ -50,6 +54,9 @@ clf = clf.fit(X_train, Y_train)
 
 #best = clf.best_estimator_
 best = clf
+
+print("Model Parameters")
+print(best.get_params())
 
 # use the model for probabilistic prediction
 Y_pred_train = best.predict(X_train)
