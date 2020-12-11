@@ -1,0 +1,33 @@
+|Node: goal <= 9600.0
+|-Node: open_epoch <= 2491141.0
+|--Node: launched_epoch <= 1404823293.0
+|---Node: usd_goal_real <= 1497.07
+|----Node: decision=1
+|----Node: decision=1
+|---Node: usd_goal_real <= 748.37
+|----Node: decision=1
+|----Node: decision=0
+|--Node: launched_epoch <= 1399075564.0
+|---Node: usd_goal_real <= 4115.62
+|----Node: decision=1
+|----Node: decision=0
+|---Node: title_punc <= 0.0
+|----Node: decision=0
+|----Node: decision=0
+|-Node: usd_goal_real <= 43843.78
+|--Node: title_punc <= 0.0
+|---Node: Technology == 0
+|----Node: decision=0
+|----Node: decision=0
+|---Node: open_epoch <= 4313564.0
+|----Node: decision=0
+|----Node: decision=0
+|--Node: title_punc <= 0.0
+|---Node: Games == 0
+|----Node: decision=0
+|----Node: decision=0
+|---Node: open_epoch <= 4568019.0
+|----Node: decision=0
+|----Node: decision=0
+
+The Accuracy is 0.6309252506836828

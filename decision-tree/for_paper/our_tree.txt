@@ -1,0 +1,8 @@
+This simplified tree shows only the paths to a classification of 1 (success).
+
+goal <= 9600
+--- open_epoch <= 2491141
+--- --- launched_epoch > 1404823293
+--- --- --- usd_goal_real <= 748.37
+--- --- launched_epoch <= 1399075564
+--- --- --- usd_goal_real <= 4115.62

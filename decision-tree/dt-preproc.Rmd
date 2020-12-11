@@ -25,7 +25,8 @@ names(df_orig)
 ```{r}
 #df = df_orig[c(1:100),]
 #df = df_orig[c(1:5000),] # segmented dataset
-df = df_orig # use this line to run on the full dataset
+df = df_orig[c(1:50000),] # big dataset
+#df = df_orig # use this line to run on the full dataset
 head(df)
 ```
 
@@ -251,6 +252,7 @@ if (segmented) {
 if (with_cats) {
   suffix = paste(suffix, "_cat", sep="")
 }
+suffix = "_big_cat"
 # now output to file
 write.csv(df_test, paste("data/ks_test", suffix, ".csv", sep=""))
 write.csv(df_train, paste("data/ks_train", suffix, ".csv", sep=""))
