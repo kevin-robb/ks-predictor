@@ -4,14 +4,12 @@ from typing import List, Tuple
 from datetime import datetime
 
 def accuracy(y, p):
-    # Calculate the accuracy given the true labels and probabilistic predictions.
+    # Calculate the accuracy given the true labels and  predictions.
     # y[i] is list of real labels.
-    # p[i][1] is the probability of predicting 1.
+    # p[i] is list of predictions.
     num_correct = 0
     num_labels = len(y)
-    # we will say the model's guess is the choice with higher probability.
     for i in range(num_labels):
-        #print("Values are y[i]=" + str(y[i]) + " and p[i][1]=" + str(p[i][1]))
         if y[i] == p[i]:
             num_correct += 1
     return float(num_correct)/float(num_labels)
